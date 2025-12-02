@@ -1,0 +1,108 @@
+v5.3.2
+Highlights
+Passing a percentage unit to the global abs() is deprecated since Dart Sass v1.65.0. It resulted in a deprecation warning when compiling Bootstrap with Dart Sass. This has been fixed internally by changing the values passed to the divide() function. The divide() function has not been fixed itself so that we can keep supporting node-sass cross-compatibility. In v6, this won't be an issue as we plan to drop support for node-sass.
+Using multiple ids in a collapse target wasn't working anymore and has been fixed.
+Color modes
+Increased color contrast of form range track background in light and dark modes.
+Fixed table state rendering for color modes with a focus on the striped table in dark mode to increase color contrast.
+Allow <mark> color customization for color modes.
+Docs
+Added alternative CDNs section in Getting started -> Download.
+Added Discord and Bootstrap subreddit links in README and Getting started -> Introduction:
+Discord maintained by the community
+Bootstrap subreddit
+
+
+v5.3.3
+Highlights
+Fixed a breaking change introduced with color modes where it was required to manually import variables-dark.scss when building Bootstrap with Sass. Now, _variables.scss will automatically import _variables-dark.scss. If you were already importing _variables-dark.scss manually, you should keep doing it as it won't break anything and will be the way to go in v6.
+Fixed a regression in the selector engine that wasn't able to handle multiple IDs anymore.
+Color modes
+Badges now use the .text-bg-* text utilities to be certain that the text is always readable (especially when the customized colors are different in light and dark modes).
+Fixed our color-modes.js script to handle the case where the OS is set to light mode and the auto color mode is used on the website. If you copied the script from our docs, you should apply this change to your own script.
+Fixed color schemes description in the color modes documentation to show that color-scheme() only accept light and dark values as parameters.
+Miscellaneous
+Allowed <dl>, <dt> and <dd> in the sanitizer.
+Dropped evenly items distribution for modal and offcanvas headers.
+Fixed the accordion CSS selectors to avoid inheritance issues when nesting accordions.
+Fixed the focus box-shadow for the validation stated form controls.
+Fixed the focus ring on focused checked buttons.
+Fixed the product example mobile navbar toggler.
+Changed the RTL processing of carousel control icons.
+
+
+v5.3.4
+Changes
+#40888: Dependabot: switch to grouped updates
+🚀 Features
+#41299: Typo fixed
+#41187: Docs: mention removal of util.js in migration guide
+#41228: Docs: Simplify ids for checks, radios and switches
+#41150: Update fixtureId to FIXTURE_ID for consistency
+#40965: Docs: Use <article> element for example cards
+#40932: Docs: add ngx-bootstrap to JavaScript frameworks list
+#40790: Docs: Drop .grid where it shouldn't be used
+#40821: Docs: precise how to add new .order-* classes in 'Layout > Columns'
+#40914: Docs: drop useless .justify-content-start class in homepage
+#40876: Remove unneeded flexbug workaround
+#40870: Docs: Update modal min-height inline style
+#40844: Docs: Remove mention about Safari's limited support flexbox gap
+#40620: Docs: minor accessibility improvements for Examples
+#40619: Docs: Fix a minor accessibility issue (checkout example missing h1)
+#40577: Docs: Add main element to Cheatsheet Examples
+#39815: Docs: drop unused .bi-exclamation-triangle-fill class
+#40507: Docs: HTTPS link to ikons iconset
+#39777: Docs: fix Reddit URL to avoid redirection
+#39697: refactor(accordion): merge selectors for border-radius rule
+
+
+v5.3.5
+Hot fix for a regression from upstream in Autoprefixer.
+
+What's Changed
+Fix floating labels rendering on Firefox by @julien-deramond in #41347
+Bump to v5.3.5 by @mdo in #41348
+
+
+v5.3.6
+Highlights
+Ported the docs from Hugo to Astro for our own sanity!
+Added usage docs for Accordion JavaScript
+Prevent .visually-hidden overflowing children to become focusable
+Limit .card-group selectors to immediate children to fix some inheritance issues
+Changes
+docs: update readme to include bun install by @Electroid in #41277
+Docs: fix specification for getInstance by @fulldecent in #41297
+Mention npm install and npm run dist in CONTRIBUTING.md by @mdo in #41340
+docs: add Sass deprecations notice in docs by @MaxLardenois in #41283
+docs: Better indicate include options in sass setup. by @Kelketek in #41143
+docs: add 'skeleton loaders' to loading placeholders description by @MohamadSalman11 in #41177
+Update offcanvas.md To Mention Adding data-bs-target for Close Buttons in Offcanvas Components by @ASchoe311 in #41325
+Limit selectors in .card-group to immediate children to fix border-radius bug by @mscdex in #41298
+Docs: add Border radius section for Input group by @TommasoAllegretti in #40776
+Docs: use 'i.e.' instead of 'e.g.' in Floating Labels example description by @julien-deramond in #41364
+Docs: move Cheatsheet RTL example to the RTL category by @julien-deramond in #41282
+Doc: fix blockquote mismatch by @viniciusvts in #41295
+Removed broken translation links by @MasterPuffin in #41359
+Docs: migration from Hugo to Astro by @julien-deramond in #41251
+Update devDependencies by @julien-deramond in #41383
+Bump image-size from 1.0.2 to 2.0.2 by @julien-deramond in #41384
+Add switch attribute to docs for switch checkbox by @mdo in #41396
+Add private comment to BaseComponent Class by @MohamadSalman11 in #41254
+Alternate for #41142, disabled list group items by @mdo in #41397
+Docs: add Usage section with JavaScript guide for Accordion component by @TommasoAllegretti in #40768
+Attempt to return focus explicitly to dropdown trigger by @mdo in #41365
+Fix typos and code indentation in Forms > Checks and radios by @julien-deramond in #41399
+chore: Spell check .md and .mdx files. by @Jason3S in #41398
+Remove files configuration from .cspell.json by @julien-deramond in #41400
+Docs: Remove unneeded Twitter/X metatags (as it uses Open Graph for title/description and image) by @coliff in #41408
+Move _isShown() method to private section by @MohamadSalman11 in #41220
+Removed line break between // Private comment and method by @MohamadSalman11 in #41218
+remove link to sunset resource on accessibility.mdx by @crgrafton in #41418
+docs(pagination): put current page on link element for a11y by @MarkoOleksiyenko in #41154
+Update devDependencies and regenerate package-lock.json by @julien-deramond in #41425
+Prevent .visually-hidden overflowing children to become focusable by @ffoodd in #41286
+Add docs release prep script by @mdo in #41435
+Release v5.3.6 by @mdo in #41406
+
+
