@@ -1,0 +1,13 @@
+5.65.19 (2025-03-20)
+Bug fixes
+gherkin mode: Add support for Rule Example keywords
+
+pascal mode Make keywords case-insensitive
+
+sql mode Support quoted identifier for PostgreSQL
+
+5.65.18 (2024-09-20)
+Bug fixes
+dart mode: Handle numeric separators.
+
+groovy mode: Fix a bug in highlighting interpolated variable names.
