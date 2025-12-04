@@ -520,5 +520,128 @@ Upgrade to ASM 9.7.1 (for early Java 24 support) #33821
 Upgrade to Micrometer 1.14.0 #33876
 Upgrade to Reactor 2024.0.0 #33878
 
+v6.2.0-RC3 Pre-release
+⭐ New Features
+Update retrieve() in RestClient to execute and extract in single scope #33777
+Remove proxyTargetAware attribute from @MockitoSpyBean #33775
+PathMatchingResourcePatternResolver sorting of JAR resources #33771
+Add default handling for disconnected client errors to Spring MVC #33763
+Remove ServerResponse.AsyncBuilder interface #33736
+Fix PathMatchingResourcePatternResolver manifest classpath discovery #33705
+Add cookie support to RestClient #33697
+🐞 Bug Fixes
+@MockitoSpyBean does not support transparent verification #33774
+Bean with defaultCandidate = false and qualifier does not work with constructor injection #33762
+Update HttpHeaders.setHost() to actually remove the Host header #33716
+📔 Documentation
+Rework links to Spring Boot docs in reference documentation #33776
+Add Kotlin examples in aot.adoc #33761
+Improve the discoverability of Java and Kotlin APIs documentation from the refdoc #32835
 
+
+v6.2.0-RC2 Pre-release
+⭐ New Features
+Verify static resource location ends on slash #33712
+Support record canonical constructor in BeanUtils #33707
+Rename OverrideMetadata for Bean Overrides #33702
+Rename BeanOverrideStrategy enum constants #33701
+Polish ServletWebRequest #33698
+Remove support for relative paths in static resource handling #33687
+Add value attribute alias to @MockitoBean and @MockitoSpyBean #33680
+Reject bean names with factory prefix for Bean Overrides #33674
+Revise handling of URI variable syntax in WhatWG URL parser #33673
+Introspect pre-registered singletons in preDetermineBeanTypes as well #33668
+Remove unnecessary array length check #33655
+Polish CorsConfiguration #33650
+Add URL Parser for RFC 3986 #33639
+Handle X-Forwarded-Prefix parsed by Reactor-Netty in ReactorServerHttpRequest #33638
+RestClient should auto-detect ReactorClientHttpRequestFactory #33635
+Improve random source in SockJS support #33632
+Stop replacing existing Bean Override definitions with pseudo-definitions #33627
+Introduce enforceOverride flag in @TestBean and @MockitoBean #33613
+Refactor unwrapOptional method to improve readability and performance #33612
+ServerSentEvent should implement equals() and hashCode() #33606
+Reduce the GC pressure due to NoTransactionInContextException instances #33601
+Make DynamicPropertyRegistrarBeanInitializer public #33593
+Improve toString() for AbstractBeanDefinition and BeanMetadataAttribute #33579
+Add utility methods for resource handler checks #33574
+UrlHandlerFilter should not strip the trailing slash from the contextPath URL #33565
+AbstractGenericHttpMessageConverter has no constructor taking a Charset #33563
+JdbcClient ResultQuerySpec - Provide a optionalValue() method #33560
+Add read timeout setter on HttpComponentsClientHttpRequestFactory #33556
+Fix virtual thread pinning caused by synchronized blocks in EclipseLinkJpaDialect #33546
+Add RestClient.Builder#messageConverters(List) #33536
+Refine null-safety for additional Assert methods #33530
+Throw runtime error for @TransactionalEventListener when @Transactional propagation level is not REQUIRES_NEW or NOT_SUPPORTED #33470
+With virtual threads enabled, long-running fixedDelay tasks block fixedRate tasks #33408
+Provide a public mechanism for detecting if AOT processing is in progress #33388
+Use only one request timeout mechanism in JdkClientHttpRequest #33090
+Support bean override features with AOT and native image #32933
+Limit reflective operations in BeanInstanceSupplier with Spring AOT #32834
+Mixin created with IntroductionInterceptor results in dynamic proxy instead of CGLIB proxy #31304
+Lenient URI parsing in ServletServerHttpRequest #30489
+Exclude authorization messages from ERROR logging in StompSubProtocolHandler #28252
+Propagate fully capable ServletContext in AbstractContextLoaderInitializer (for SessionCookieConfig access) #22319
+🐞 Bug Fixes
+PropertySourcesPropertyResolver no longer converts to non CharSequence types #33727
+Lower-casing of scheme in UriComponentsBuilder breaks use of URI variables #33699
+Remove @MockitoBeanSettings and support for MockitoSession management #33692
+@MockitoBeanSettings is not inherited in @Nested test class #33685
+AOT fails when generating code for a component declared as an inner-class #33683
+@MockitoBean reset and MockitoSession management do not work with @Nested tests #33676
+DurationFormatterUtils should not attempt to parse an empty duration #33669
+DefaultServerHttpRequestBuilder can create case-sensitive Headers instances #33666
+Context cache is broken if two Bean Override fields declare annotations in different order #33633
+Test bean override support should only override singletons #33602
+Kotlin checked exception thrown from proxy service causes UndeclaredThrowableException #33585
+Autowiring of generic beans with array types is broken since 6.2.0-M1 #33535
+AnnotatedBeanDefinitionReader should respect @Fallback qualifier analogous to @Primary #33533
+📔 Documentation
+Add Javadoc since for headers() in Delete/Patch/Post/PutExchange #33723
+Document XML parser usage against security false positives #33713
+Update scheduling.adoc #33709
+Document TestExecutionListener implementations introduced in 6.2 #33661
+Replace RFC 7807 with RFC 9457 in documentation #33594
+Document that TestContextAnnotationUtils is required for proper @Nested test class support #33586
+Replace e.g. with for example #33515
+Document non-default candidate beans and Java-based configuration of non-autowire candidate beans #33392
+🔨 Dependency Upgrades
+Upgrade to Jackson 2.18 #33615
+Upgrade to Micrometer 1.14.0-RC1 #33648
+Upgrade to Reactor 2024.0.0-RC1 #33636
+
+
+v6.2.0-RC1 Pre-release
+⭐ New Features
+Update mime.types and remove commented entries #33512
+Provide access to the unexpanded URI template when using MockMvc #33509
+Avoid empty array allocations in AnnotationTypeMapping #33507
+Introduce DynamicPropertyRegistrar as a replacement for DynamicPropertyRegistry bean support #33501
+Avoid storing duplicate empty array in MethodParameter field #33496
+Avoid empty array allocations in ResolvableType #33473
+Update Content-Length when body changed by Interceptor #33459
+UrlHandlerFilter should not strip the trailing slash from root URLs #33444
+Unwrap CGLIB proxy when invoking non-proxied methods in ReflectionTestUtils #33429
+Refactor eTag formatting logic into a static utility method #33412
+Encapsulate ETag comparison logic #33385
+Harmonize Reactor client class names within the http.client package #33382
+Allow multiple listeners on ResponseBodyEmitter #33356
+Invoke init/destroy/SpEL methods via public declaring type whenever possible #33216
+Create WebFlux equivalent filter to handle URLs with trailing slashes #32830
+Provide more ways to stream through ServerResponse for WebMvc functional endpoints #32710
+Avoid buffering all elements before sending JSON when using Flux/Flow + Kotlinx Serialization Encoder #33428
+🐞 Bug Fixes
+BeanCurrentlyInCreationException is thrown when multiple threads get a bean from StaticApplicationContext's Bean Factory #33463
+📔 Documentation
+Revise reference documentation for Spring JMX annotations #33466
+Add Javadoc since for ReflectionHints.registerForInterfaces() #33458
+Revise AOP proxying section of the reference manual #33455
+Consolidate self injection documentation in the reference manual #33454
+Expand acronyms FQN and FQCN #33452
+Document that WebFlux does not support forward redirects #33441
+Document TaskDecorator usage with TaskExecutors #33438
+🔨 Dependency Upgrades
+Upgrade to JUnit 5.11 #33395
+Upgrade to Micrometer 1.14.0-M3 #33520
+Upgrade to Reactor 2024.0.0-M6 #33521
 
