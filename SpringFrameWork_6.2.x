@@ -520,6 +520,7 @@ Upgrade to ASM 9.7.1 (for early Java 24 support) #33821
 Upgrade to Micrometer 1.14.0 #33876
 Upgrade to Reactor 2024.0.0 #33878
 
+
 v6.2.0-RC3 Pre-release
 ⭐ New Features
 Update retrieve() in RestClient to execute and extract in single scope #33777
@@ -644,4 +645,331 @@ Document TaskDecorator usage with TaskExecutors #33438
 Upgrade to JUnit 5.11 #33395
 Upgrade to Micrometer 1.14.0-M3 #33520
 Upgrade to Reactor 2024.0.0-M6 #33521
+
+
+v6.2.0-M7 Pre-release
+⭐ New Features
+Improve optional parameter checks for HTTP Interface argument #33339
+Two @Bean methods with the same bean name should consistently throw an exception #33330
+Support static headers for http interface clients #33309
+Add DatabaseClient bind variant for list of positioned parameters #33274
+HandlerMethodValidator should support simple Cross-Parameter constraints #33271
+UserCredentialsConnectionFactoryAdapter should provide credentials to createContext #33270
+Support flexible multi-unit duration format in @DurationFormat #33262
+MockMvc should prepare a FilterRegistration when initializing filters #33252
+Add option to ignore bean registration with AOT #33243
+Support JAXBElement in Jaxb2RootElementHttpMessageConverter #33233
+MimeMessageHelper does not set filename on inline MimeBodyPart #33230
+Add handling for AsyncRequestNotUsableException to ResponseEntityExceptionHandler #33225
+Allow formatting of Collection values for @RequestParam with HTTP interface client #33220
+Support rendering stream of fragments #33194
+Allow resolving nested placeholders if value is not String but CharSequence #32876
+Support multiple style of parsing/printing Durations #30396
+Restore support for Freemarker request parameters and taglibs now that it supports Jakarta #30186
+AOT/native support when registering beans with the Kotlin DSL #29555
+Offer a way for MockitoTestExecutionListener to enable strict stubbing #33318
+Provide access to all counters in case of BatchUpdateException with multiple batches #23867
+Low level cache failure for sync/reactive/future Cacheable get is not handled by CacheErrorHandler #21590
+🐞 Bug Fixes
+Programmatic NoUniqueBeanDefinitionException in CacheAspectSupport should match message structure #33305
+JdbcClient.MappedQuerySpec::single can return null #33300
+Registration of DynamicPropertyRegistry in a test context has broken native testing #33272
+MapAccessor#canWrite incorrectly returns true for non-Map target #33265
+BeanDefinition processed by AOT does not keep fallback flag #33261
+ImportSelector#getExclusionFilter does not exclude matching candidates with import selector #27080
+📔 Documentation
+Document that SpEL expressions using bean references are not compilable #33363
+Remove duplicated "the" in Javadoc #33308
+Update documentation for fragment rendering #33195
+Document ControllerAdviceBean as internal usage #32776
+🔨 Dependency Upgrades
+Upgrade to Micrometer 1.14.0-M2 #33327
+Upgrade to Reactor 2024.0.0-M5 #33328
+
+
+
+
+v6.2.0-M6 Pre-release
+⭐ New Features
+Initialize RequestPath on demand in AbstractServerHttpRequest #33227
+Add support for making MapAccessor read-only #33222
+DefaultPartHttpMessageReader should not instantiate Reactor Scheduler eagerly #33218
+Change MIME type mapping for JavaScript to text/javascript #33197
+Handle SimpleAsyncTaskExecutor in WebSocketMessageBrokerStats #33104
+Support way to extract ConstraintViolation from HandlerMethodValidationException #33025
+🐞 Bug Fixes
+AssertJ support for multipart does not set property content type on the request #33232
+MockMvc builders are not source and binary compatible with previous 6.x generations #33229
+__BeanFactoryRegistrations generated file can be too large with a BeanFactory with lots of bean definitions #33126
+
+
+
+v6.2.0-M5 Pre-release
+⭐ New Features
+Harmonize handling of current factory method in SimpleInstantiationStrategy #33192
+Unwrap InvocationTargetException in SpEL's FunctionReference #33174
+Support rendering multiple fragments #33162
+Allow MessageHeaderAccessor to be created with existing headers #33153
+Generalize message conversion for HTTP message content in AssertJ support #33148
+Allow arbitrary packages to be scanned for Reflective usage #33132
+Support external methods referenced by fully-qualified name in @TestBean #33125
+Update Content-Type based on encoding in MVC FreeMarkerView #33119
+Introduce SmartHttpMessageConverter #33118
+Support property placeholders in @Sql script paths #33114
+Reject ModelMap argument types in WebFlux #33109
+Set output_encoding in FreeMarkerView implementations #33106
+Allow encoding to be set with a Charset in FreeMarker support #33102
+Let custom ObjectProvider implementations declare a single method only #33070
+Add support for running assertions on resolved exception in MockMvcTester #33060
+Add dedicated support for printing the MvcResult in MockMvcTester #33059
+Provide a way to determine if a context is in the process of being closed #33058
+MockHttpServletRequestBuilder should merge URI from the parent if necessary #33057
+Fail fast if a @Bean method declares @Autowired as well #33051
+Add dedicated async dispatch support for MockMvcTester #33040
+Add dedicated multipart support for MockMvcTester #33027
+spring-form JSP tags should escape HTML value based on response character encoding #33023
+SimpleClientHttpResponse throws IOException when response body is empty and status code is >= 400 #33020
+MockHttpServletResponse defaults to ISO-8859-1 for JSON while the rest of the framework defaults to UTF-8 #33019
+Propagate context to message converters when streaming with Flux in Spring MVC #32813
+Resolve URI to baseUrl in RestClient #32679
+Constructor data binding support for List, Map and array arguments #32426
+Implement Eclipse Jetty core HTTP handler adapter #32097
+Add better control over generated files registration #31331
+Provide more declarative control over reflection hint registration #29194
+Replace @Nonnull(when = When.MAYBE)  by @CheckForNull in @Nullable #27183
+Add JSON support to Protobuf codecs #25457
+🐞 Bug Fixes
+AntPathPatternMatcher hardcoded "/" separator in variables matching and comparator #33085
+AOT generates a raw type for a generic type with nested unresolved generics #33069
+Unwrap Kotlin inline value classes return values #33026
+Kotlin Serialization support does not take null-safety into account #33016
+📔 Documentation
+Move Testing below other framework concerns in the reference documentation TOC #33083
+Move Servlet HTTP Message Conversion to its own section #33063
+Document AssertJ support for MockMvc #32454
+🔨 Dependency Upgrades
+Upgrade to HtmlUnit 4.2.0 #33081
+Upgrade to Kotlin Coroutines 1.8.1 #33176
+Upgrade to Micrometer 1.14.0-M1 #33170
+Upgrade to Reactor 2024.0.0-M4 #33171
+
+
+
+
+v6.2.0-M4 Pre-release
+⭐ New Features
+Add support for converting the whole JSON document without using JSONPath #33018
+Support Protobuf 4.x #33011
+Do not swallow exceptions on failing to release a savepoint #32992
+Being able to provide extended timeouts for specific phases in the DefaultLifecycleProcessor #32985
+Allow json content to be converted using AssertJ's AssertFactory #32953
+Add support for BeanPostProcessor defined in Kotlin companion object #32946
+Support @TestBean factory methods defined in interfaces #32943
+Add a way to set the timeout to reactive jdk client #32941
+Revise convention-based semantics for @TestBean factory methods #32940
+Support field name as fallback qualifier for @TestBean, MockitoBean, and MockitoSpyBean #32939
+Use getMessageSource internally in RequestContext #32926
+MockMvc no longer needs methods that take a String httpMethod for custom methods #32914
+Allow MockMvcTester to prepare the query without the need of static imports #32913
+Rework Bean Overriding feature to better behave with TCF Context Caching #32884
+Introduce API to initialize BeanFactory before singleton instantiation #32836
+Introduce static MultiValueMap factory methods #32832
+Make use of JSONAssert in public API optional #32791
+Refine exception handling in AOT process to provide additional context #32777
+Handle ResponseStatusException thrown by MVC functional endpoints #32689
+Support data binding from request headers #32676
+Ignore trailing semicolons when parsing Accept-Language header #32259
+Introduce request attributes in RestClient #32027
+Make WebSocketMessageBrokerStats optionally export stats to micrometer #31604
+Add Partitioned cookie attribute support for reactive servers #31454
+Add execution metadata to scheduled tasks #24560
+🐞 Bug Fixes
+Exception that prevents component scan with REGISTER_BEAN conditions should provide the affected configuration class #32998
+Bean override with REPLACE_OR_CREATE_DEFINITION and byType lookup fails if no match is found #32990
+Bean override factory post processing doesn't work with FactoryBean #32971
+@TestBean factory method not found in multi-level @Nested hierarchy #32951
+Support queries in opaque URLs #32920
+AbstractJsonContentAssert should allow satistfies to run on the json content, not the raw string #32894
+Content negotiation for exception handling fails with WebFlux #32878
+📔 Documentation
+Fix typo in WebTestClient expectedXml #32969
+🔨 Dependency Upgrades
+Upgrade to Micrometer 1.13.1 #33000
+Upgrade to Reactor 2024.0.0-M3 #33006
+
+
+
+v6.2.0-M3 Pre-release
+⭐ New Features
+Lazily register DynamicValuesPropertySource in the TestContext framework #32871
+Introduce getRequest and getResponse on MvcTestResult #32846
+Add support for qualifiers in test bean overriding and consider improving by-type matching #32822
+Support Content Negotiation and view rendering in ResponseEntityExceptionHandler #31936
+🐞 Bug Fixes
+Change default phase for STOMP message handling components to be ahead of Boot's WebServerStartStopLifecycle default phase #27519
+
+
+
+v6.2.0-M2 Pre-release
+⭐ New Features
+Make it easier to register reflection hints on interface hierarchies #32824
+Support varargs invocations in SpEL for varargs array subtype in compiled expressions #32804
+Align StandaloneMockMvcBuilder with trailing slash defaults #32796
+Use lambda expressions consistently #32765
+Bean overriding in tests should use by-type semantic if no name is specified #32761
+Add ServerRequest.pathVariableOrNull Kotlin extension #32738
+Throw an exception for suspending factory methods #32719
+Introduce ReflectiveIndexAccessor convenience class in SpEL #32714
+Add BodyInserters.fromValue(T, ParameterizedTypeReference<T>) and related APIs #32713
+Rename AssertableMockMvc to MvcTester and review assertions structure #32712
+Introduce generateCodeForArgument() in CodeFlow #32708
+Make SpelNode compilation aware #32707
+Add a requiredBody() extension to RestClient.ResponseSpec #32703
+Add IndexAccessor support to SpEL's SimpleEvaluationContext #32702
+Support compilation of array and list indexing with Integer in SpEL #32694
+Avoid unnecessary compilation attempts in SpEL's Indexer #32677
+Adds support for qualifying columns with table. #32653
+Omit empty resource description in DeprecatedBeanWarner's log message #32647
+Introduce getName() in SpEL's BeanReference #32640
+Validate that private JUnit Jupiter lifecycle methods are not annotated with @Autowired #32627
+Ensure removal of Content-Type header if body Publisher is empty #32622
+Introduce CompilableIndexAccessor SPI in SpEL #32613
+AbstractJackson2Decoder doesn't support decoding NDJSON arrays into Flux #32579
+Handle DataBufferLimitException as HTTP 413 responses #32558
+Introduce URL parser based on algorithm provided in Living URL standard #32513
+JettyClientHttpRequestFactory should set request/response timeout #32330
+Remove Hibernate substitutions and deprecated properties usage #32314
+Register DynamicPropertyRegistry as a singleton bean in a test's ApplicationContext #32271
+Allow for AbstractUrlHandlerMapping to add/remove handlers at runtime #32064
+Make it possible for Spring Security to align with Spring MVC without HandlerMappingIntrospector #31823
+Create Filter to handle URLs with trailing slashes #31366
+Add testing support for WebMvc.fn #30477
+Use URL and HTTP method in DefaultResponseErrorHandler #28958
+CacheAspectSupport initialization failure should throw dedicated exceptions, rather than IllegalStateException #22442
+Clear AspectJExpressionPointcut cache when it is no longer used #12334
+🐞 Bug Fixes
+MediaTypeAssert risk false negative with isNotEqual assertion #32756
+IndexAccessor cannot support custom Collection target type #32736
+Custom IndexAccessor cannot support String index type #32706
+HttpHeaders should reject negative ContentLength values #32660
+📔 Documentation
+Improve wording in Spring Framework Overview documentation #32829
+Clarify supported targets for annotations in the TestContext framework #32772
+Modernize the lazy-initialized beans refdoc section #32767
+Document SpEL IndexAccessor support in the reference manual #32735
+Use lowercase package name in code snippets #32734
+Fix class name typo in reference documentation #32664
+Introduce configuration code includes and tabs in the Integration section #32600
+Document bean override support in the TestContext framework in the reference manual #32490
+🔨 Dependency Upgrades
+Upgrade to HtmlUnit 4.1.0 #32740
+Upgrade to Micrometer 1.13.0 #32811
+Upgrade to Reactor 2024.0.0-M2 #32785
+Upgrade to webjars-locator-lite 1.0.0 #32564
+
+
+
+v6.2.0-M1 Pre-release
+⭐ New Features
+Remove unnecessary method.isAccessible() invocation #32548
+Improve names of classes generated by the SpEL compiler #32497
+Refine null-safety with NullAway build-time checks #32475
+Consistent handling of undeclared checked exceptions in CGLIB proxies #32469
+Resolve property-dependent parameter names for exception messages #32462
+Consistent ErrorHandler support in TaskScheduler variants #32460
+Add CBOR support to AllEncompassingFormHttpMessageConverter #32428
+Reject null return value from MethodReplacer for primitive return type #32412
+Make SpEL's OptimalPropertyAccessor private #32410
+NPE when using pathExtension predicate for routes that have no file extensions #32404
+Use Map#computeIfAbsent in SpEL support classes #32385
+Use ELContext instead of deprecated VariableResolver API in JspPropertyAccessor #32383
+Add web support for YAML via Jackson #32345
+Add DataSource configuration/exposure to LocalEntityManagerFactoryBean #32344
+ServletResponseHttpHeaders ignores content type in ServletResponse #32339
+Use ConcurrentHashMap.newKeySet where feasible #32294
+Avoid resizing of fixed-size HashSet/LinkedHashSet variants #32291
+Support backticks for quoted identifiers in spring-r2dbc #32285
+Avoid internal lifecycle synchronization for SingleConnectionFactory and SingleConnectionDataSource #32284
+DefaultMessageListenerContainer should be able to scale down using default config #32260
+Revise DefaultMessageListenerContainer for first-class virtual thread support #32252
+Optimize Request Predicate attribute merging #32245
+Add ThreadLocalAccessor for LocaleContext and RequestAttributes #32243
+Avoid ASYNC dispatch if possible in DefaultAsyncServerResponse #32223
+Deprecate LobHandler and SqlXmlHandler abstractions (including SqlLobValue and related support classes) #32179
+Revisit default lifecycle phases and timeouts (e.g. for ThreadPoolTaskScheduler) #32152
+Harmonize ChannelRegistration to use Executor rather than TaskExecutor #32129
+Deprecate HttpHeaders.writableHttpHeaders #32116
+JsonPathAssertions methods that take a type used as a lambda should be ordered consistently #32062
+Deprecate local variable support in SpEL's internal ExpressionState #32004
+Support sending large STOMP messages as fragmented frames on WebSocketStompClient #31970
+NamedParameterJdbcTemplate does not support backticks for quoted identifiers #31944
+Use UTF-8 by default for JSON multipart content in ContentRequestMatchers #31924
+Add interception of RFC-7807 responses #31822
+Provide more control over charset parameter when writing form data #31781
+Enhance WebTestClient to support JSONPath decoding to higher level objects #31653
+Enhance JsonPathExpectationsHelper to allow use of JSONPath Configuration #31651
+Support "--" end of options in SimpleCommandLineArgsParser #31513
+Make use of bean definition overriding more visible #31288
+Initial support for Servlet 6.1 #31159
+Initial support for JPA 3.2 #31157
+Support to propagate a savepoint operation via TransactionSynchronization #30509
+Resolve type variable recursively in GenericTypeResolver #30079
+Propagate WebClient attributes into underlying HTTP client request where possible #29958
+Provide a safe way to override and mock beans in the TestContext framework #29917
+Invoke methods via public interface/superclass in compiled SpEL expressions #29857
+Introduce null-safe index operator in SpEL #29847
+@Valid annotation can't establish dependency relationship between beans #29730
+Optimize constructor dependency injection performance for parameter name matches #28122
+Efficient webjars version resolution via webjars-locator-lite #27619
+Throw Exception when two primary beans are present in one factory #26612
+Allow creation of Beans that cannot be autowired by type unless qualified #26528
+Introduce IndexAccessor SPI to customize the SpEL Indexer #26478
+Introduce support for non-@Primary fallback beans #26241
+Optimize ConfigurationClassPostProcessor#enhanceConfigurationClasses method to shorten startup time #25738
+Inherited @Transactional methods should be able to use class-level TransactionManager qualifier from concrete class #24291
+TaskScheduler does not work with TaskDecorator #23755
+Synchronization during singleton creation may result in deadlock #23501
+Allow global default for @Transactional rollback behavior on checked exceptions #23473
+Add support for resolving multiple bounds in type variables #22902
+@Transactional annotation can't establish dependency relationship between beans #22526
+Asynchronous EntityManagerFactory bootstrapping to complete on context refresh completion [SPR-17334] #21868
+Provide a mechanism to be notified that a bean has been created [SPR-16822] #21362
+Reduce the effect of different base package configuration on component scanning performance and make the effect more intuitive [SPR-16649] #21190
+Support AssertJ variant in MockMvc [SPR-16637] #21178
+Support configuration of connection URL via EmbeddedDatabaseBuilder [SPR-16619] #21160
+Revisit storage of null attributes in AbstractFallbackTransaction/CacheAttributeSource [SPR-15513] #20072
+Asynchronous initialization of beans during startup [SPR-14920] #19487
+Autowiring with @Autowired/@Inject get much slower than with @Resource as the number of classes increases [SPR-13086] #17677
+Parallel bean initialization during startup [SPR-8767] #13410
+Support escaping prefix and separator in property placeholders [SPR-4953] #9628
+🐞 Bug Fixes
+Transactional event listener invoked like standard event listener if @EnableTransactionManagement not active #32319
+Stop overriding thread name prefix for externally configured Executor in ChannelRegistration #32132
+WebClient and RestClient's defaultRequest(..) is not invoked early enough #32053
+Alias resolution in SimpleAliasRegistry depends on hash codes of alias values #32024
+Fix DefaultDataBuffer#getNativeBuffer() to set correct limit #32009
+DefaultDataBuffer#setNativeBuffer violates contract of DataBuffer #30984
+The method getNativeBuffer() in DefaultDataBuffer returns misconfigured ByteBuffer #30967
+ApplicationContext caches are not cleared as expected when beans are lazy initialized #30954
+A configuration class superclass that is skipped due to register bean phase conditions is ignored when another configuration class that extends it is processed #28676
+Configuration class parsing registers bean in parent class if overridden @Bean method defines an alternative name #28286
+Conditions to determine if @ComponentScan should be applied can be chosen from the wrong class #27077
+Fallback with placeholder is evaluated even if the fallback is not required #26268
+Name of scanned @Configuration class affects @Import to work or fail #24643
+Reject conditional @ComponentScan declarations that rely on the REGISTER_BEAN phase #23206
+Initialization blocked by multi-threaded event publishing [SPR-16357] #20904
+Invalid instance injected for generic type in case of partial type variable [SPR-16179] #20727
+📔 Documentation
+Polish Bean Overriding in Tests section of the reference guide #32411
+Improve Javadoc for substituteNamedParameters() in NamedParameterUtils regarding empty lists #32380
+StringUtils.uriDecode decodes strings with non-ASCII characters incorrectly #32360
+Improve documentation for SpEL indexing support #32355
+Document when the JPA infrastructure is ready for use #26153
+Refactor configuration code samples to be more relevant for modern Spring applications #22171
+🔨 Dependency Upgrades
+Upgrade to HtmlUnit 3.11.0 #30392
+Upgrade to Micrometer 1.13.0-RC1 #32595
+Upgrade to Reactor 2024.0.0-M1 #32591
+
+
 
