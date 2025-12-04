@@ -1,0 +1,54 @@
+Version 2.3.232 (2024-08-11)
+Issue #4005: Add optional version to RANDOM_UUID function and generator of version 7 in addition to existing version 4
+Issue #3945: Column not found in correlated subquery, when referencing outer column from LEFT JOIN .. ON clause
+Issue #4097: StackOverflowException when using multiple SELECT statements in one query (2.3.230)
+Issue #3982: Potential issue when using ROUND
+Issue #3894: Race condition causing stale data in query last result cache
+Issue #4075: infinite loop in compact
+Issue #4091: Wrong case with linked table to postgresql
+Issue #4088: BadGrammarException when the same alias is used within two different CTEs
+Issue #4079: [2.3.230] Regression in ORDER BY ... DESC on dates
+
+Version 2.3.230 (2024-07-15)
+Issue #4091: Wrong case with linked table to postgresql
+Issue #2752: Fix for "double mark" error at database backup opening
+Issue #4052: Allow 0 as a valid chunk id
+Issue #4012: Fix "Chunk not found" database corruption by ensure proper prologue/epilogue for every SQL statement in JDBC ";" - separated list
+Issue #3960: Fix NPE in page rewrite
+Issue #3909: Reduce resource consumption of too aggressive disk space housekeeping
+Issue #701: An available index is never used for ordering, when the requested order is DESC
+Issue #4036: NULLS NOT DISTINCT constraint changed after column dropped
+Issue #4033: Wrong array produced when using ARRAY_AGG() on UNNEST(ARRAY[CAST(? AS INT)]) expression in a PreparedStatement
+Issue #3909: Maintenance taking too much resources since 2.2.222
+Issue #4010: org.h2.jdbc.JdbcConnection.getTypeMap() returns null
+PR #4007: Update pom.xml related to CVE-2024-1597
+Issue #3907: MvStoreTool unable to Repair() or Rollback() [2.1.214]
+RP #3997: Server-side batch execution for prepared statements
+Issue #3106: Trailing commas in SELECT are accepted by the parser
+PR #3992: Add IPv6 support to H2 Console
+Issue #3966: Unable to insert null into a JSON column
+Issue #3554: Regression in 2.1.214 when joining 2 recursive CTE containing bind values
+PR #3989: Refactor CTE-related code and reduce recompilations
+Issue #3987: Allow empty <with column list>
+Issue #822: WITH clauses' column aliases are not maintained correctly when selecting from CTE from within a derived table
+Issue #910: Common Table Expressions (CTE) inside WITH should have their own identifier scope
+Issue #3981: Unexpected result when using trigonometric functions
+Issue #3983: INVISIBLE columns should be ignored in INSERT statement without explicit column list
+Issue #3960: NullPointerException when executing batch insert
+Issue #3972: Constraints of local temporary tables aren't listed in INFORMATION_SCHEMA
+PR #3973: Fix Tool.showUsage() for GUIConsole
+Issue #3968: Add possibility to get index size on disk
+Issue #3909: Maintenance taking too much resources since 2.2.222
+Issue #3950: JdbcSQLIntegrityConstraintViolationException: Unique index or primary key violation
+PR #3947: Compound index search fix
+Issue #3940: Wrong estimation of a query execution cost with spatial index
+Issue #3931: MVStoreTool -dump throws a NullPointerException or returns binary data
+Issue #3910: Small error in the tutorial regarding full text search
+PR #3915: Improving search by compound indexes
+RP #3893: Fixed unit test is support en_GB locale
+Issue #2834: MERGE INTO fails with an error "Timeout trying to lock table"
+Issue #3883: Performance regression in 2.2.222
+PR #3879: Require Java 11
+
+Version 2.2.224 (2023-09-17)
+Issue #3883 Performance regression in 2.2.222
