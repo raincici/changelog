@@ -1,0 +1,291 @@
+### [3.44.0 - 2025.07.07](https://github.com/zloirock/core-js/releases/tag/v3.44.0)
+- Changes [v3.43.0...v3.44.0](https://github.com/zloirock/core-js/compare/v3.43.0...v3.44.0) (87 commits)
+- [`Uint8Array` to / from base64 and hex stage 3 proposal](https://github.com/tc39/proposal-arraybuffer-base64):
+  - Fixed [several V8 bugs](https://github.com/zloirock/core-js/issues/1439) in `Uint8Array.fromHex` and `Uint8Array.prototype.{ setFromBase64, toBase64, toHex }`, thanks [**@brc-dd**](https://github.com/brc-dd)
+- [Joint iteration stage 2.7 proposal](https://github.com/tc39/proposal-joint-iteration):
+  - Uses `Get` in `Iterator.zipKeyed`, following [tc39/proposal-joint-iteration#43](https://github.com/tc39/proposal-joint-iteration/pull/43)
+- [`Iterator` sequencing stage 2.7 proposal](https://github.com/tc39/proposal-iterator-sequencing):
+  - `Iterator.concat` no longer reuses `IteratorResult` object of concatenated iterators, following [tc39/proposal-iterator-sequencing#26](https://github.com/tc39/proposal-iterator-sequencing/pull/26)
+- [`Iterator` chunking stage 2 proposal](https://github.com/tc39/proposal-iterator-chunking):
+  - Added built-ins:
+    - `Iterator.prototype.sliding`
+- [`Number.prototype.clamp` stage 2 proposal](https://github.com/tc39/proposal-math-clamp):
+  - `clamp` no longer throws an error on `NaN` as `min` or `max`, following [tc39/proposal-math-clamp#d2387791c265edf66fbe2455eab919016717ce6f](https://github.com/tc39/proposal-math-clamp/commit/d2387791c265edf66fbe2455eab919016717ce6f) 
+- Fixed some cases of `Set.prototype.{ symmetricDifference, union }` detection
+- Added missing dependencies to some entries of static `Iterator` methods
+- Added missing `/full/{ instance, number/virtual }/clamp` entries
+- Some minor stylistic changes
+- Compat data improvements:
+  - Added Electron 38 and 39 compat data mapping
+  - Added Oculus Quest Browser 38 and 39 compat data mapping
+  - `Iterator` helpers marked as fixed and updated following the latest spec changes in Safari 26.0
+  - `Set.prototype.{ difference, symmetricDifference, union }` marked as fixed in Safari 26.0
+  - `SuppressedError` marked [as fixed](https://bugzilla.mozilla.org/show_bug.cgi?id=1971000) in FF141
+  - `Error.isError` marked [as fixed](https://github.com/nodejs/node/pull/58691) in Node 24.3
+  - `setImmediate` and `clearImmediate` marked as available [from Deno 2.4](https://github.com/denoland/deno/pull/29877)
+  - `Math.sumPrecise` marked as [shipped in Bun 1.2.18](https://github.com/oven-sh/bun/pull/20569)
+  - `%TypedArray%.prototype.with` marked as fixed in Bun 1.2.18
+
+### [3.43.0 - 2025.06.09](https://github.com/zloirock/core-js/releases/tag/v3.43.0)
+- Changes [v3.42.0...v3.43.0](https://github.com/zloirock/core-js/compare/v3.42.0...v3.43.0) (139 commits)
+- [Explicit Resource Management proposals](https://github.com/tc39/proposal-explicit-resource-management):
+  - Built-ins:
+    - `Symbol.dispose`
+    - `Symbol.asyncDispose`
+    - `SuppressedError`
+    - `DisposableStack`
+      - `DisposableStack.prototype.dispose`
+      - `DisposableStack.prototype.use`
+      - `DisposableStack.prototype.adopt`
+      - `DisposableStack.prototype.defer`
+      - `DisposableStack.prototype.move`
+      - `DisposableStack.prototype[@@dispose]`
+    - `AsyncDisposableStack`
+      - `AsyncDisposableStack.prototype.disposeAsync`
+      - `AsyncDisposableStack.prototype.use`
+      - `AsyncDisposableStack.prototype.adopt`
+      - `AsyncDisposableStack.prototype.defer`
+      - `AsyncDisposableStack.prototype.move`
+      - `AsyncDisposableStack.prototype[@@asyncDispose]`
+    - `Iterator.prototype[@@dispose]`
+    - `AsyncIterator.prototype[@@asyncDispose]`
+  - Moved to stable ES, [May 2025 TC39 meeting](https://x.com/robpalmer2/status/1927744934343213085)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- [`Array.fromAsync` proposal](https://github.com/tc39/proposal-array-from-async):
+  - Built-ins:
+    - `Array.fromAsync`
+  - Moved to stable ES, [May 2025 TC39 meeting](https://github.com/tc39/proposal-array-from-async/issues/14#issuecomment-2916645435)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- [`Error.isError` proposal](https://github.com/tc39/proposal-is-error):
+  - Built-ins:
+    - `Error.isError`
+  - Moved to stable ES, [May 2025 TC39 meeting](https://github.com/tc39/proposals/commit/a5d4bb99d79f328533d0c36b0cd20597fa12c7a8)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- Added [Joint iteration stage 2.7 proposal](https://github.com/tc39/proposal-joint-iteration):
+  - Added built-ins:
+    - `Iterator.zip`
+    - `Iterator.zipKeyed`
+- Added [`Iterator` chunking stage 2 proposal](https://github.com/tc39/proposal-iterator-chunking):
+  - Added built-ins:
+    - `Iterator.prototype.chunks`
+    - `Iterator.prototype.windows`
+- [`Number.prototype.clamp` proposal](https://github.com/tc39/proposal-math-clamp):
+  - Built-ins:
+    - `Number.prototype.clamp`
+  - Moved to stage 2, [May 2025 TC39 meeting](https://github.com/tc39/proposal-math-clamp/commit/a005f28a6a03e175b9671de1c8c70dd5b7b08c2d)
+  - `Math.clamp` was replaced with `Number.prototype.clamp`
+  - Removed a `RangeError` if `min <= max` or `+0` min and `-0` max, [tc39/proposal-math-clamp/#22](https://github.com/tc39/proposal-math-clamp/issues/22)
+- Always check regular expression flags by `flags` getter [PR](https://github.com/tc39/ecma262/pull/2791). Native methods are not fixed, only own implementation updated for:
+  - `RegExp.prototype[@@match]`
+  - `RegExp.prototype[@@replace]`
+- Improved handling of `RegExp` flags in polyfills of some methods in engines without proper support of `RegExp.prototype.flags` and without polyfill of this getter
+- Added feature detection for [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=288595) that occurs when `this` is updated while `Set.prototype.difference` is being executed
+- Added feature detection for [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=289430) that occurs when iterator record of a set-like object isn't called before cloning `this` in the following methods:
+  - `Set.prototype.symmetricDifference`
+  - `Set.prototype.union`
+- Added feature detection for [a bug](https://issues.chromium.org/issues/336839115) in V8 ~ Chromium < 126. Following methods should throw an error on invalid iterator:
+  - `Iterator.prototype.drop`
+  - `Iterator.prototype.filter`
+  - `Iterator.prototype.flatMap`
+  - `Iterator.prototype.map`
+- Added feature detection for [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=288714): incorrect exception thrown by `Iterator.from` when underlying iterator's `return` method is `null`
+- Added feature detection for a FF bug: incorrect exception thrown by `Array.prototype.with` when index coercion fails
+- Added feature detection for a WebKit bug: `TypedArray.prototype.with` should truncate negative fractional index to zero, but instead throws an error
+- Worked around a bug of many different tools ([example](https://github.com/zloirock/core-js/pull/1368#issuecomment-2908034690)) with incorrect transforming and breaking JS syntax on getting a method from a number literal
+- Fixed deoptimization of the `Promise` polyfill in the pure version
+- Added some missed dependencies to `/iterator/flat-map` entries
+- Some other minor fixes and improvements
+- Compat data improvements:
+  - Added [Deno 2.3](https://github.com/denoland/deno/releases/tag/v2.3.0) and [Deno 2.3.2](https://github.com/denoland/deno/releases/tag/v2.3.2) compat data mapping
+  - Updated Electron 37 compat data mapping
+  - Added Opera Android 90 compat data mapping
+  - [`Error.isError`](https://github.com/tc39/proposal-is-error) marked not supported in Node because of [a bug](https://github.com/nodejs/node/issues/56497)
+  - `Set.prototype.difference` marked as not supported in Safari and supported only from Bun 1.2.5 because of [a bug](https://bugs.webkit.org/show_bug.cgi?id=288595)
+  - `Set.prototype.{ symmetricDifference, union }` marked as not supported in Safari and supported only from Bun 1.2.5 because of [a bug](https://bugs.webkit.org/show_bug.cgi?id=289430)
+  - `Iterator.from` marked as not supported in Safari and supported only from Bun 1.2.5 because of [a bug](https://bugs.webkit.org/show_bug.cgi?id=288714)
+  - Iterators closing on early errors in `Iterator` helpers marked as implemented from FF141
+  - `Array.prototype.with` marked as supported only from FF140 because it throws an incorrect exception when index coercion fails
+  - `TypedArray.prototype.with` marked as unsupported in Bun and Safari because it should truncate negative fractional index to zero, but instead throws an error
+  - `DisposableStack` and `AsyncDisposableStack` marked as [shipped in FF141](https://bugzilla.mozilla.org/show_bug.cgi?id=1967744) (`SuppressedError` has [a bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1971000))
+  - `AsyncDisposableStack` bugs marked as fixed in Deno 2.3.2
+  - `SuppressedError` bugs ([extra arguments support](https://github.com/oven-sh/bun/issues/9283) and [arity](https://github.com/oven-sh/bun/issues/9282)) marked as fixed in Bun 1.2.15
+
+### [3.42.0 - 2025.04.30](https://github.com/zloirock/core-js/releases/tag/v3.42.0)
+- Changes [v3.41.0...v3.42.0](https://github.com/zloirock/core-js/compare/v3.41.0...v3.42.0) (142 commits)
+- [`Map` upsert proposal](https://github.com/tc39/proposal-upsert):
+  - Moved to stage 2.7, [April 2025 TC39 meeting](https://x.com/robpalmer2/status/1911882240109261148)
+  - Validation order of `WeakMap.prototype.getOrInsertComputed` updated following [tc39/proposal-upsert#79](https://github.com/tc39/proposal-upsert/pull/79)
+  - Built-ins:
+    - `Map.prototype.getOrInsert`
+    - `Map.prototype.getOrInsertComputed`
+    - `WeakMap.prototype.getOrInsert`
+    - `WeakMap.prototype.getOrInsertComputed`
+- Don't call well-known `Symbol` methods for `RegExp` on primitive values following [tc39/ecma262#3009](https://github.com/tc39/ecma262/pull/3009):
+  - For avoid performance regression, temporarily, only in own `core-js` implementations
+  - Built-ins:
+    - `String.prototype.matchAll`
+    - `String.prototype.match`
+    - `String.prototype.replaceAll`
+    - `String.prototype.replace`
+    - `String.prototype.search`
+    - `String.prototype.split`
+- Added workaround for the [`Uint8Array.prototype.setFromBase64`](https://github.com/tc39/proposal-arraybuffer-base64) [bug](https://bugs.webkit.org/show_bug.cgi?id=290829) in some of Linux builds of WebKit
+- Implemented early-error iterator closing following [tc39/ecma262#3467](https://github.com/tc39/ecma262/pull/3467), including fix of [a WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=291195), in the following methods:
+  - `Iterator.prototype.drop`
+  - `Iterator.prototype.every`
+  - `Iterator.prototype.filter`
+  - `Iterator.prototype.find`
+  - `Iterator.prototype.flatMap`
+  - `Iterator.prototype.forEach`
+  - `Iterator.prototype.map`
+  - `Iterator.prototype.reduce`
+  - `Iterator.prototype.some`
+  - `Iterator.prototype.take`
+- Fixed missing forced replacement of [`AsyncIterator` helpers](https://github.com/tc39/proposal-async-iterator-helpers)
+- Added closing of sync iterator when async wrapper yields a rejection following [tc39/ecma262#2600](https://github.com/tc39/ecma262/pull/2600). Affected methods:
+  - [`Array.fromAsync`](https://github.com/tc39/proposal-array-from-async) (due to the lack of async feature detection capability - temporarily, only in own `core-js` implementation)
+  - [`AsyncIterator.from`](https://github.com/tc39/proposal-async-iterator-helpers)
+  - [`Iterator.prototype.toAsync`](https://github.com/tc39/proposal-async-iterator-helpers)
+- Added detection for throwing on `undefined` initial parameter in `Iterator.prototype.reduce` (see [WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=291651))
+- `core-js-compat` and `core-js-builder` API:
+  - Added `'intersect'` support for `targets.esmodules` (Babel 7 behavior)
+  - Fixed handling of `targets.esmodules: true` (Babel 7 behavior)
+- Compat data improvements:
+  - [Explicit Resource Management](https://github.com/tc39/proposal-explicit-resource-management) features disabled (again) in V8 ~ Chromium 135 and re-added in 136
+  - [`RegExp.escape`](https://github.com/tc39/proposal-regex-escaping) marked as [shipped from V8 ~ Chromium 136](https://issues.chromium.org/issues/353856236#comment17)
+  - [`Error.isError`](https://github.com/tc39/proposal-is-error) marked as [shipped from FF138](https://bugzilla.mozilla.org/show_bug.cgi?id=1952249)
+  - [Explicit Resource Management](https://github.com/tc39/proposal-explicit-resource-management) features re-enabled in [Deno 2.2.10](https://github.com/denoland/deno/releases/tag/v2.2.10)
+  - [`Iterator` helpers proposal](https://github.com/tc39/proposal-iterator-helpers) features marked as supported from Deno 1.38.1 since it seems they were disabled in 1.38.0
+  - `Iterator.prototype.{ drop, reduce, take }` methods marked as fixed in Bun 1.2.11
+  - Added [NodeJS 24.0](https://github.com/nodejs/node/pull/57609) compat data mapping
+  - Updated Electron 36 and added Electron 37 compat data mapping
+  - Added Opera Android [88](https://forums.opera.com/topic/83800/opera-for-android-88) and [89](https://forums.opera.com/topic/84437/opera-for-android-89) compat data mapping
+  - Added Oculus Quest Browser 37 compat data mapping
+
+### [3.41.0 - 2025.03.01](https://github.com/zloirock/core-js/releases/tag/v3.41.0)
+- Changes [v3.40.0...v3.41.0](https://github.com/zloirock/core-js/compare/v3.40.0...v3.41.0) (85 commits)
+- [`RegExp.escape` proposal](https://github.com/tc39/proposal-regex-escaping):
+  - Built-ins:
+    - `RegExp.escape`
+  - Moved to stable ES, [February 2025 TC39 meeting](https://github.com/tc39/proposals/commit/b81fa9bccf4b51f33de0cbe797976a84d05d4b76)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+- [`Float16` proposal](https://github.com/tc39/proposal-float16array):
+  - Built-ins:
+    - `Math.f16round`
+    - `DataView.prototype.getFloat16`
+    - `DataView.prototype.setFloat16`
+  - Moved to stable ES, [February 2025 TC39 meeting](https://github.com/tc39/proposals/commit/b81fa9bccf4b51f33de0cbe797976a84d05d4b76)
+  - Added `es.` namespace modules, `/es/` and `/stable/` namespaces entries
+- [`Math.clamp` stage 1 proposal](https://github.com/CanadaHonk/proposal-math-clamp):
+  - Built-ins:
+    - `Math.clamp`
+  - Extracted from [old `Math` extensions proposal](https://github.com/rwaldron/proposal-math-extensions), [February 2025 TC39 meeting](https://github.com/tc39/proposals/commit/0c24594aab19a50b86d0db7248cac5eb0ae35621)
+  - Added arguments validation
+  - Added new entries
+- Added a workaround of a V8 `AsyncDisposableStack` bug, [tc39/proposal-explicit-resource-management/256](https://github.com/tc39/proposal-explicit-resource-management/issues/256)
+- Compat data improvements:
+  - [`DisposableStack`, `SuppressedError` and `Iterator.prototype[@@dispose]`](https://github.com/tc39/proposal-explicit-resource-management) marked as [shipped from V8 ~ Chromium 134](https://issues.chromium.org/issues/42203506#comment24)
+  - [`Error.isError`](https://github.com/tc39/proposal-is-error) added and marked as [shipped from V8 ~ Chromium 134](https://issues.chromium.org/issues/382104870#comment4)
+  - [`Math.f16round` and `DataView.prototype.{ getFloat16, setFloat16 }`](https://github.com/tc39/proposal-float16array) marked as [shipped from V8 ~ Chromium 135](https://issues.chromium.org/issues/42203953#comment36)
+  - [`Iterator` helpers proposal](https://github.com/tc39/proposal-iterator-helpers) features marked as [shipped from Safari 18.4](https://developer.apple.com/documentation/safari-release-notes/safari-18_4-release-notes#New-Features)
+  - [`JSON.parse` source text access proposal](https://github.com/tc39/proposal-json-parse-with-source) features marked as [shipped from Safari 18.4](https://developer.apple.com/documentation/safari-release-notes/safari-18_4-release-notes#New-Features)
+  - [`Math.sumPrecise`](https://github.com/tc39/proposal-math-sum) marked as shipped from FF137
+  - Added [Deno 2.2](https://github.com/denoland/deno/releases/tag/v2.2.0) compat data and compat data mapping
+    - Explicit Resource Management features are available in V8 ~ Chromium 134, but not in Deno 2.2 based on it
+  - Updated Electron 35 and added Electron 36 compat data mapping
+  - Updated [Opera Android 87](https://forums.opera.com/topic/75836/opera-for-android-87) compat data mapping
+  - Added Samsung Internet 28 compat data mapping
+  - Added Oculus Quest Browser 36 compat data mapping
+
+### [3.40.0 - 2025.01.08](https://github.com/zloirock/core-js/releases/tag/v3.40.0)
+- Changes [v3.39.0...v3.40.0](https://github.com/zloirock/core-js/compare/v3.39.0...v3.40.0) (130 commits)
+- Added [`Error.isError` stage 3 proposal](https://github.com/tc39/proposal-is-error):
+  - Added built-ins:
+    - `Error.isError`
+  - We have no bulletproof way to polyfill this method / check if the object is an error, so it's an enough naive implementation that is marked as `.sham`
+- [Explicit Resource Management stage 3 proposal](https://github.com/tc39/proposal-explicit-resource-management):
+  - Updated the way async disposing of only sync disposable resources, [tc39/proposal-explicit-resource-management/218](https://github.com/tc39/proposal-explicit-resource-management/pull/218)
+- [`Iterator` sequencing stage 2.7 proposal](https://github.com/tc39/proposal-iterator-sequencing):
+  - Reuse `IteratorResult` objects when possible, [tc39/proposal-iterator-sequencing/17](https://github.com/tc39/proposal-iterator-sequencing/issues/17), [tc39/proposal-iterator-sequencing/18](https://github.com/tc39/proposal-iterator-sequencing/pull/18), December 2024 TC39 meeting
+- Added a fix of [V8 < 12.8](https://issues.chromium.org/issues/351332634) / [NodeJS < 22.10](https://github.com/nodejs/node/pull/54883) bug with handling infinite length of set-like objects in `Set` methods
+- Optimized `DataView.prototype.{ getFloat16, setFloat16 }` performance, [#1379](https://github.com/zloirock/core-js/pull/1379), thanks [**@LeviPesin**](https://github.com/LeviPesin)
+- Dropped unneeded feature detection of non-standard `%TypedArray%.prototype.toSpliced`
+- Dropped possible re-usage of some non-standard / early stage features (like `Math.scale`) available on global
+- Some other minor improvements
+- Compat data improvements:
+  - [`RegExp.escape`](https://github.com/tc39/proposal-regex-escaping) marked as shipped from Safari 18.2
+  - [`Promise.try`](https://github.com/tc39/proposal-promise-try) marked as shipped from Safari 18.2
+  - [`Math.f16round` and `DataView.prototype.{ getFloat16, setFloat16 }`](https://github.com/tc39/proposal-float16array) marked as shipped from Safari 18.2
+  - [`Uint8Array` to / from base64 and hex proposal](https://github.com/tc39/proposal-arraybuffer-base64) methods marked as shipped from Safari 18.2
+  - [`JSON.parse` source text access proposal](https://github.com/tc39/proposal-json-parse-with-source) features marked as [shipped from FF135](https://bugzilla.mozilla.org/show_bug.cgi?id=1934622)
+  - [`RegExp.escape`](https://github.com/tc39/proposal-regex-escaping) marked as shipped [from FF134](https://bugzilla.mozilla.org/show_bug.cgi?id=1918235)
+  - [`Promise.try`](https://github.com/tc39/proposal-promise-try) marked as shipped from FF134
+  - [`Symbol.dispose`, `Symbol.asyncDispose` and `Iterator.prototype[@@dispose]`](https://github.com/tc39/proposal-explicit-resource-management) marked as shipped from FF135
+  - [`JSON.parse` source text access proposal](https://github.com/tc39/proposal-json-parse-with-source) features marked as shipped from Bun 1.1.43
+  - Fixed NodeJS version where `URL.parse` was added - 22.1 instead of 22.0
+  - Added [Deno 2.1](https://github.com/denoland/deno/releases/tag/v2.1.0) compat data mapping
+  - Added [Rhino 1.8.0](https://github.com/mozilla/rhino/releases/tag/Rhino1_8_0_Release) compat data with significant number of modern features
+  - Added Electron 35 compat data mapping
+  - Updated Opera 115+ compat data mapping
+  - Added Opera Android [86](https://forums.opera.com/topic/75006/opera-for-android-86) and 87 compat data mapping
+
+### [3.39.0 - 2024.10.31](https://github.com/zloirock/core-js/releases/tag/v3.39.0)
+- Changes [v3.38.1...v3.39.0](https://github.com/zloirock/core-js/compare/v3.38.1...v3.39.0)
+- [`Iterator` helpers proposal](https://github.com/tc39/proposal-iterator-helpers):
+  - Built-ins:
+    - `Iterator`
+      - `Iterator.from`
+      - `Iterator.prototype.drop`
+      - `Iterator.prototype.every`
+      - `Iterator.prototype.filter`
+      - `Iterator.prototype.find`
+      - `Iterator.prototype.flatMap`
+      - `Iterator.prototype.forEach`
+      - `Iterator.prototype.map`
+      - `Iterator.prototype.reduce`
+      - `Iterator.prototype.some`
+      - `Iterator.prototype.take`
+      - `Iterator.prototype.toArray`
+      - `Iterator.prototype[@@toStringTag]`
+  - Moved to stable ES, [October 2024 TC39 meeting](https://github.com/tc39/proposal-iterator-helpers/issues/284#event-14549961807)
+  - Added `es.` namespace modules, `/es/` and `/stable/` namespaces entries
+- [`Promise.try`](https://github.com/tc39/proposal-promise-try):
+  - Built-ins:
+    - `Promise.try`
+  - Moved to stable ES, [October 2024 TC39 meeting](https://github.com/tc39/proposal-promise-try/commit/53d3351687274952b3b88f3ad024d9d68a9c1c93)
+  - Added `es.` namespace module, `/es/` and `/stable/` namespaces entries
+  - Fixed `/actual|full/promise/try` entries for the callback arguments support
+- [`Math.sumPrecise` proposal](https://github.com/tc39/proposal-math-sum):
+  - Built-ins:
+    - `Math.sumPrecise`
+  - Moved to stage 3, [October 2024 TC39 meeting](https://github.com/tc39/proposal-math-sum/issues/19)
+  - Added `/actual/` namespace entries, unconditional forced replacement changed to feature detection
+- Added [`Iterator` sequencing stage 2.7 proposal](https://github.com/tc39/proposal-iterator-sequencing):
+  - Added built-ins:
+    - `Iterator.concat`
+- [`Map` upsert stage 2 proposal](https://github.com/tc39/proposal-upsert):
+  - [Updated to the new API following the October 2024 TC39 meeting](https://github.com/tc39/proposal-upsert/pull/58)
+  - Added built-ins:
+    - `Map.prototype.getOrInsert`
+    - `Map.prototype.getOrInsertComputed`
+    - `WeakMap.prototype.getOrInsert`
+    - `WeakMap.prototype.getOrInsertComputed`
+- [Extractors proposal](https://github.com/tc39/proposal-extractors) moved to stage 2, [October 2024 TC39 meeting](https://github.com/tc39/proposals/commit/11bc489049fc5ce59b21e98a670a84f153a29a80)
+- Usage of `@@species` pattern removed from `%TypedArray%` and `ArrayBuffer` methods, [tc39/ecma262/3450](https://github.com/tc39/ecma262/pull/3450):
+  - Built-ins:
+    - `%TypedArray%.prototype.filter`
+    - `%TypedArray%.prototype.filterReject`
+    - `%TypedArray%.prototype.map`
+    - `%TypedArray%.prototype.slice`
+    - `%TypedArray%.prototype.subarray`
+    - `ArrayBuffer.prototype.slice`
+- Some other minor improvements
+- Compat data improvements:
+  - [`Uint8Array` to / from base64 and hex proposal](https://github.com/tc39/proposal-arraybuffer-base64) methods marked as [shipped from FF133](https://bugzilla.mozilla.org/show_bug.cgi?id=1917885#c9)
+  - Added [NodeJS 23.0](https://nodejs.org/en/blog/release/v23.0.0) compat data mapping
+  - `self` descriptor [is fixed](https://github.com/denoland/deno/issues/24683) in Deno 1.46.0
+  - Added Deno [1.46](https://github.com/denoland/deno/releases/tag/v1.46.0) and [2.0](https://github.com/denoland/deno/releases/tag/v2.0.0) compat data mapping
+  - [`Iterator` helpers proposal](https://github.com/tc39/proposal-iterator-helpers) methods marked as [shipped from Bun 1.1.31](https://github.com/oven-sh/bun/pull/14455)
+  - Added Electron 34 and updated Electron 33 compat data mapping
+  - Added [Opera Android 85](https://forums.opera.com/topic/74256/opera-for-android-85) compat data mapping
+  - Added Oculus Quest Browser 35 compat data mapping
