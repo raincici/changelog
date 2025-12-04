@@ -1,0 +1,22 @@
+4.3.0
+What's Changed
+- 解决Mapper父接口的泛型信息在使用泛型的场景下报ClassCastException的问题，fixed #886 by @samyge in #887
+- 添加了对solon的插件支持 by @trifolium-x in #914
+- 一个Mapper中支持多个不同类型的provider by @YuanHao97 in #908
+- WeekendSqlsUtils新增select方法；generator新增配置，强制不生成注解 by @erengong in #901
+- 修复了Class.getDeclaredFields()返回的元素的不确定顺序引起的问题 by @SaaiVenkat in #896
+- 为@LogicDelete注解提供两个字段用于处理希望null作为逻辑删除的标记的能力。表示以null作为删除/未删除记录的标识 by @getError in #894
+
+5.0.0 发布
+- 基于 jdk17 和 spring boot 3.3 开发
+- JPA 依赖改为 jakarta.persistence-api
+- mybatis-spring 重新适配，兼容原有配置
+- mybatis-spring-boot-starter 重新适配，兼容原有配置和逻辑
+特别说明
+- mybatis.basePackages 是 tk.mapper 中特有的配置（4.x就有的），当通过这个配置指定 Mapper 所在包后，不会再指定扫描 @Mapper 注解的接口。会扫描指定包下面所有的接口（会排除 @RegisterMapper 注解标记的通用接口）。
+
+5.0.1 Latest
+- 增加参数enableBaseResultMapFlag 是否自动处理 Mapper 接口中其他手写指定 resultType 的返回结果类型为 resultMap。，默认 false 不启用。
+此版本和 5.0.0 会因为上述参数不兼容，上面 自动处理 Mapper 接口中其他手写指定 resultType 的返回结果类型为 resultMap 是 5.0 版本增加的一个功能，由于对低版本4.x存在兼容性问题，因此在5.0.1改正了这个问题。
+
+和 5.0.0 相比，5.0.1启用后也只会修改通过 resultType 设置返回值的情况，如果本身指定了 resultMap，就不会再覆盖手工设置的值。
