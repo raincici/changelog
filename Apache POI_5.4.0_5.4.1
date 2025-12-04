@@ -1,0 +1,56 @@
+Version 5.4.1 (2025-04-06)
+Summary
+Note: JDK 24 will change behavior of locale providers, some formatting might be different when upgrading
+Upgrade commons-codec dependency to 1.18.0
+Upgrade bouncycastle dependency to 1.80
+Upgrade pdfbox dependency to 3.0.4
+Upgrade graphics2d dependency to 3.0.3
+Changes
+Type	Bug	Module	Description
+fix	69563	XSSF	Avoid int-overflow when handling file with very many rows and columns
+fix	69618	OOXML	ZipPackage save should check that intermediate steps succeed
+add	github-775	OOXML	Allow some OPC compliance checks to be tuned
+fix	66260	XWPF	Add getNumberOfTexts() method
+fix	68094	SXSSF	Allow to use SXSSFSheet.setArbitraryExtraWidth() to define an adjustment-factor when auto-sizing columns
+fix	57603	HWPF	Fix reading/writing of documents with many columns
+fix	65190	SS_Common	Handle decimal format '0#' the same way as Excel
+fix	66425	POI_Overall	Multiple fixes found by fuzzing Apache POI via oss-fuzz
+add	66260	XWPF	Add getNumberOfTexts method to XWPFRun
+fix	69315	HSMF	Continue processing properties after multivalued properties
+fix	69529	XSSF	Streamed reading: Log failures to format formulas and numbers instead of stopping processing
+fix	69536	SXSSF	Fix arbitrary extra width support
+fix	69555	SXSSF	Handle extra issue where FontSystem is missing
+fix	69583	SS_Common	Cell copy support does not handle Time only values properly
+fix	69681	SS_Common	Issue with date/time formats that leave a space before the AM/PM part
+add	69714	POI_Overall	Allow custom TempFileCreationStrategy per thread
+
+Version 5.4.0 (2025-01-08)
+Summary
+Add support for SOURCE_DATE_EPOCH to allow to create reproducible binary files without creation/modification-timestamp being set
+Breaking change: Some invalid content in the compressed file-formats for xlsx/docx/pptx/... now fail parsing to prevent handling malicious input incorrectly
+Upgrade ant dependency to 1.10.15
+Upgrade batik dependency to 1.18
+Upgrade commons-codec dependency to 1.17.1
+Upgrade commons-compress dependency to 1.27.1
+Upgrade commons-io dependency to 2.18.0
+Upgrade log4j-api dependency to 2.24.3 and add log4j-bom dependency
+Upgrade pdfbox dependency to 3.0.3
+Upgrade xmlbeans dependency to 5.3.0
+Upgrade xmlsec dependency to 3.0.5
+Upgrade JaCoCo code-coverage tooling to 0.8.12
+Changes
+Type	Bug	Module	Description
+fix	github-653	HSSF	Adjust HSSFWorkbook.getSheet() to return the first case-insensitive match, similar to XSSF
+fix	github-655	XWPF	Fix searching text in paragraphs when text is spread across multiple runs
+fix	github-657	SXSSF	Support setting an arbitrary extra width value for column widths - not working - fixed in 69536 (5.4.1)
+fix	github-670	XWPF	XWPFRun.getText should support delInstrText and noBreakHyphen
+fix	github-672	XWPF	Support removing XWPF Styles
+fix	github-673	OOXML	Add word10.xsd to poi-ooxml-full
+fix	github-733	SS_Common	Fix issue with param order in MIRR function evaluation
+fix	66590	POIFS	Number of blocks used by the property table missing from the file header
+fix	69154	XSSF	Shifting columns with merged regions generates an error about overlapping regions
+fix	69209	SS_Common	default ignoreMissingFontSystem to true
+fix	69323	POI_Overall	DefaultTempFileCreationStrategy should worry about OS deleting the temp dir
+fix	69411	XSSF	add XSSFReader.getSheetIterator
+fix	69418	SS_Common	Issue when evaluating WORKDAY function that has a cell ref as 2nd param
+fix	69620	OOXML	Throw exception if xlsx/docx/pptx contains duplicate file names
