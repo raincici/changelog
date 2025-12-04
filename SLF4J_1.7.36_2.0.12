@@ -1,0 +1,126 @@
+2024-02-06 - Release of SLF4J 2.0.12
+• Various providers, e.g. slf4j-simple, slf4j-nop and slf4j-jdk14 modules, now export their packages and allow reflection by the org.slf4j module in their respective module-info.java files. This allows for loading via reflection when a provider is specified via "slf4j.provider" in system properties in Jigsaw modular applications. This issue was raised by Robert Scholte in issue/393.
+
+• Reverted removal of Util.report methods which were removed by mistake in slf4j version 2.0.10 and breaking compatibility with logback-classic.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.12 from the source code repository (GitHub). Release built using Java "21" 2023-10-17 LTS build 21.0.1.+12-LTS-29 under Linux Debian 11.6.
+
+2024-01-08 - Release of SLF4J 2.0.11
+• This release reinstates the `renderLevel()` method in SimpleLogger which was removed by mistake. A few methods had their access modifiers changed from 'package' to 'protected'. These changes were requested by Guillaume Nodet who also provided the relevant patches.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.11 from the source code repository (GitHub). Release built using Java "21" 2023-10-17 LTS build 21.0.1.+12-LTS-29 under Linux Debian 11.6.
+
+2024-01-02 - Release of SLF4J 2.1.0-alpha1 (EXPERIMENTAL)
+• This release reverts to Java 8 as a base requirement at runtime. Given the diffusion and popularity of SLF4J as a logging API, the extra work involved in supporting Java 8 is worth the effort.
+
+2023-12-28 - Release of SLF4J 2.1.0-alpha0 (EXPERIMENTAL)
+• Added MDCAmbit class to assists in the creation and removal (aka closing) of MDC entries. For commenting see discussion 372. The changes are such that existing logging providers do not need to be modified.
+
+• Several new methods such as arg() and variants and kv() and variants in the fluent API. See the LoggingEventBuilder javadocs for details. For commenting see discussion 376. The changes are such that existing logging providers do not need to be modified.
+
+• Bumped required Java version to 11. For commenting see discussion 379.
+
+2023-12-28 - Release of SLF4J 2.0.10
+• SLF4J now uses the newly introduced Reporter class to report messages about its internal state. The behaviour of Reporter can be altered using the "slf4j.internal.report.stream" and "slf4j.internal.verbosity" system properties. See internal messages FAQ entry for further details. This feature was requested in issue 361 by Garret Wilson.
+
+• The slf4j-api module now exports version 1.7 of the org.slf4j.helper package in its MANIFEST.MF file. This was requested in PR 358 by Konrad Windszus.
+
+• Removed unreachable code in the versionSanityCheck method in LoggerFactory class. This problem was reported in issue 371 by Róbert Papp.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.10 from the source code repository (GitHub). Release built using Java "21" 2023-10-17 LTS build 21.0.1.+12-LTS-29 under Linux Debian 11.6.
+
+2023-09-03 - Release of SLF4J 2.0.9
+• It is now possible to specify the provider class explicitly via the "slf4j.provider" system property. This bypasses the service loader mechanism for finding providers and may shorten SLF4J initialization. This change was requested in SLF4J-450 by Chris Lee with Kengo Toda providing the relevant PR.
+
+• Added a Bill of Materials (BOM) file to the project. This was a frequently requested addition as expressed in SLF4J-437. Garret Wilson's Improving the Maven Bill of Materials (BOM) Pattern document was instrumental in making this happen.
+
+• Added a module-info.java file to jul-to-slf4j module. This was requested in SLF4J-596 by Gili Tzabari.
+
+• Fixed typo in the name of the SLF4JPlarformLoggerFactory class which was renamed as SLF4JPlatformLoggerFactory. This issue was raised in SLF4J-598 by Ethan McCue who also provided the relevant PR.
+
+• The slf4j-jdk-platform-logging module now uses MessageFormat as specified in the API javadocs of System.Logger#log method. This issue was reported in SLF4J-529 by Taku Miyakawa who also provided the relevant patch.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.9 from the source code repository (GitHub). Release built using Java "20" 2023-03-21 build 20+36-2344 under Linux Debian 11.6.
+
+2023-09-03 - Release of SLF4J 2.0.8
+This release included an erroneous system property key for "sfl4j.provider" and was almost immediately superseded by version 2.0.9.
+
+2023-03-17 - Release of SLF4J 2.0.7
+• Fixed several OSGi MANIFEST.MF related issues, namely SLF4J-581, SLF4J-579 and SLF4J-583. Many thanks to Hannes Wellmann for providing the relevant PRs and for his precious collaboration..
+
+• Fixed missing javadoc artifacts. This issue was repoerted by Witalij Berdinskich in SLF4J-584.
+
+• SLF4J artifacts now include a LICENSE.txt file in published artifacts. This enhancement was requested by Tobias Wittmann in SLF4J-582.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.7 from the source code repository (GitHub). Release built using Java "19" 2022-09-20 build 19+36-2038 under Linux Debian 11.2.
+
+2022-12-12 - Release of SLF4J 2.0.6
+• When replaying events occuring during initialization, the LoggerFactory#replaySingleEvent method now applies filtering by level by invoking the filtering methods of the underlying logging system whereas previous the underlying system was invoked without filtering. This fixes SLF4J-575 reported by Patrick Doyle.
+
+• Artifacts creation now invokes the BND tool to generate OSGi headers, in particular "uses" clases. This fixes SLF4J-574 reported Jonah Graham who also provided the relevant PR.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.6 from the source code repository (GitHub). Release built using Java "19" 2022-09-20 build 19+36-2038 under Linux Debian 11.2.
+
+2022-11-25 - Release of SLF4J 2.0.5
+• If a SecurityManager is installed, then LoggerFactory will now load providers as a privileged action by invoking AccessController.doPrivileged(). This will allow Wildfy-Core to upgrade to SLF4J 2.0.x as discussed in PR 304 contributed by Piotr P. Karwasz.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.5 from the source code repository (GitHub). Release built using Java "19" 2022-09-20 build 19+36-2038 under Linux Debian 11.2.
+
+2022-11-17 - Release of SLF4J 2.0.4
+• LoggerFactory now uses the class loader that loaded LoggerFactory class itself to find providers of type SLF4JServiceProvider. Previously, the thread context class loader was used. This was unintentional and the current behavior more closely matches that of the SLF4J 1.7 series and earlier. This tentatively fixes SLF4J-544 as well as several other related/duplicating issues.
+
+• The MANIFEST.MF files of slf4j-api, slf4j-jdk14, slf4j-nop, slf4j-reload4j and slf4j-simple modules now declare the appropriate OSGi Require-Capability and Provide-Capability statements in relation to org.slf4j.spi.SLF4JServiceProvider service. This fixes SLF4J-572 reported by Stefan Bischof who also provided the relevant PR.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.4 from the source code repository (GitHub). Release built using Java "19" 2022-09-20 build 19+36-2038 under Linux Debian 11.2.
+
+2022-09-28 - Release of SLF4J 2.0.3
+• Fixed a bug in Reload4jLoggerAdapter when used in conjunction with the fluent API, the timestamp would not be correctly set. This issue was reported in SLF4J-546 by Joseph Walton.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.3 from the source code repository (GitHub). Release built using Java "19" 2022-09-20 build 19+36-2038 under Linux Debian 11.2.
+
+2022-09-20 - Release of SLF4J 2.0.2
+• Fixed bug in the setContextMap() method of Reload4jMDCAdapter. This issue was reported in SLF4J-563 by Michael Wartes.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.2 from the source code repository (GitHub). Release built using Java "18" 2022-03-22 build 18+36-2087 under Linux Debian 11.2.
+
+2022-09-14 - Release of SLF4J 2.0.1
+• The Logger.makeLoggingEventBuilder method semantics has changed so that overriding implementations should now always build a new LoggingEventBuilder instance as appropraiate for the implementation, i.e the logging backend. For more details see SLF4J-560.
+
+• Deprecated unused LoggerFactoryBinder and MarkerFactoryBinder classes. This issue was raised in SLF4J-555 by Witalij Berdinskich who provided the relevant patch.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.1 from the source code repository (GitHub). Release built using Java "18" 2022-03-22 build 18+36-2087 under Linux Debian 11.2.
+
+2022-08-20 - Release of SLF4J 2.0.0
+• Except minor javadoc changes, this release is identical to 2.0.0-beta1 released earlier this month.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.0 from the source code repository (GitHub). Release built using Java "18" 2022-03-22 build 18+36-2087 under Linux Debian 11.2.
+
+2022-08-06 - Release of SLF4J 2.0.0-beta1
+• Methods in the LoggingEventBuilder interface returning an instance of LoggingEventBuilder are now annotated with @CheckReturnValue. This allows compile time detection of missing calls to one of the terminating log() methods. Many thanks to Yuriy Artamonov and Vladimir Sitnikov for their help and valuable suggestions on this matter.
+
+Support for this check is included in IntelliJ IDEA out of the box. For more information on this feature in IntelliJ IDEA, select File → Setting → Editor → Inspections and then Java → Probable Bugs → "Result of method call ignored".
+
+As for Eclipse, this feature has been requested in bug 572496.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.0-beta1 from the source code repository (GitHub). Release built using Java "18" 2022-03-22 build 18+36-2087 under Linux Debian 11.2.
+
+2022-08-05 - Release of SLF4J 2.0.0-beta0
+• After a long debate, added setMessage(String), setMessage(Supplier<String>) and log() methods to the LoggingEventBuilder interface.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.0-beta0 from the source code repository (GitHub). Release built using Java "18" 2022-03-22 build 18+36-2087 under Linux Debian 11.2.
+
+2022-03-17 - Release of SLF4J 2.0.0-alpha7
+• Mirroring the change in the 1.7.x series, in this release also the "slf4j-log4j12" artifact automatically instructs Maven to use the "slf4j-reload4j" artifact instead. As you might have guessed, the "slf4j-reload4j" binding delegates log processing to the reload4j logging framework.
+
+The reload4j project is a fork of Apache log4j version 1.2.17 with the goal of fixing pressing security issues. It is intended as a drop-in replacement for log4j version 1.2.17. By drop-in, we mean the replacement of log4j.jar with reload4j.jar in your build with no source code changes in .java files being necessary.
+
+• The log(LoggingEvent) method in DefaultLoggingEventBuilder now invokes setCallerBoundary() method in order to correctly set the caller boundary. The caller boundary information can be used by logging implementations to compute caller information. This fixes SLF4J-511.
+
+• Correct corrupt "Export-Package" declaration in MANIFEST.MF in log4j-over-slf4j module. This fixes SLF4J-541 reported by Flavio Donzé.
+
+• The binary of this version can be reproduced by checking out the tag v_2.0.0-alpha7 from the source code repository (GitHub). Release built using Java "18" 2022-03-22 build 18+36-2087 under Linux Debian 11.2.
+
+2022-02-08 - Release of SLF4J 1.7.36
+Correct corrupt "Export-Package" declaration in MANIFEST.MF in log4j-over-slf4j module. This fixes SLF4J-541 reported by Flavio Donzé.
+
+Starting with version 1.7.36, slf4j releases will be reproducible. By reproducible we mean that anyone checking out the code corresponding to the release version from source code repository and building that local copy, will obtain an identical binary to the published binary.
