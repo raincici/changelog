@@ -1,0 +1,21 @@
+java-diff-utils-parent-4.15 Latest
+What's Changed
+Changes and new Features
+- Update README.md by @mlesniak in #153
+- Added ability to apply patch to existing list inplace by @andre161292 in #152
+- Optimize CI a bit by @Goooler in #155
+- Update JavaDoc for DiffUtils class by @mhamadli in #163
+- Add generateOriginalAndDiff method and test class by @1506085843 in #164
+- A problem was found and fixed about #164 by @1506085843 in #170
+- Typo on diff author's name by @pierrebailletsonos in #176
+- Fixes #182 by parsing diffs with 'Binary files' by @machadoit in #183
+- Fix confusing javadoc documentation for reportLinesUnchanged by @anomal in #186
+- Bump org.eclipse.jgit:org.eclipse.jgit from 5.8.1.202007141445-r to 5.13.3.202401111512-r in /java-diff-utils-jgit by @dependabot in #187
+
+java-diff-utils-parent-4.12
+What's Changed
+Changes and new Features
+- Fizzy apply by @anatawa12 in #125
+- Fix a typo in ComputeDifference.java by @sebkur in #140
+- Fix for #141 by @helbaroudy in #144
+- Update version in gradle example of README by @okue in #145
