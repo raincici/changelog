@@ -1,0 +1,582 @@
+#Spring Framework 6.0 Release Notes
+##Upgrading From Spring Framework 5.3
+###Baseline upgrades
+Spring Framework 6.0 raises the minimum requirements to Java 17+ and Jakarta EE 9+.
+
+###Removed APIs
+RPC-style remoting that has been officially and/or effectively deprecated for several years has been removed. This impacts Hessian, HTTP Invoker, JMS Invoker, and JAX-WS support, see 27422.
+
+Dedicated EJB access has also been removed as part of this effort. If you need to lookup an EJB, use JNDI directly via JndiObjectFactoryBean or <jee:jndi-lookup>.
+
+Joda-Time support in org.springframework.format.datetime has been removed. Please migrate to the java.time types.
+
+The org.springframework.cache.ehcache package has been removed as it was providing support for Ehcache 2.x - with this version, net.sf.ehcache is using Java EE APIs and is about to be End Of Life'd. Ehcache 3 is the direct replacement. You should revisit your dependency management to use org.ehcache:ehcache (with the jakarta classifier) instead and look into the official migration guide or reach out to the ehcache community for assistance. We did not replace org.springframework.cache.ehcache with an updated version, as using Ehcache through the JCache API or its new native API is preferred.
+
+###Core Container
+The JSR-330 based @Inject annotation is to be found in jakarta.inject now. The corresponding JSR-250 based annotations @PostConstruct and @PreDestroy are to be found in jakarta.annotation. For the time being, Spring keeps detecting their javax equivalents as well, covering common use in pre-compiled binaries.
+
+The core container performs basic bean property determination without java.beans.Introspector by default. For full backwards compatibility with 5.3.x in case of sophisticated JavaBeans usage, specify the following content in a META-INF/spring.factories file which enables 5.3-style full java.beans.Introspector usage: org.springframework.beans.BeanInfoFactory=org.springframework.beans.ExtendedBeanInfoFactory
+
+When staying on 5.3.x for the time being, you may enforce forward compatibility with 6.0-style property determination (and better introspection performance!) through a custom META-INF/spring.factories file: org.springframework.beans.BeanInfoFactory=org.springframework.beans.SimpleBeanInfoFactory
+
+LocalVariableTableParameterNameDiscoverer is deprecated now and logs a warning for each successful resolution attempt (it only kicks in when StandardReflectionParameterNameDiscoverer has not found names). Compile your Java sources with the common Java 8+ -parameters flag for parameter name retention (instead of relying on the -debug compiler flag) in order to avoid that warning, or report it to the maintainers of the affected code. With the Kotlin compiler, we recommend the -java-parameters flag for completeness.
+
+LocalValidatorFactoryBean relies on standard parameter name resolution in Bean Validation 3.0 now, just configuring additional Kotlin reflection if Kotlin is present. If you refer to parameter names in your Bean Validation setup, make sure to compile your Java sources with the Java 8+ -parameters flag.
+
+ListenableFuture has been deprecated in favor of CompletableFuture. See 27780.
+
+Methods annotated with @Async must return either Future or void. This has long been documented but is now also actively checked and enforced, with an exception thrown for any other return type. See 27734.
+
+SimpleEvaluationContext disables array allocations now, aligned with regular constructor resolution.
+
+###Data Access and Transactions
+Due to the Jakarta EE migration, make sure to upgrade to Hibernate ORM 5.6.x with the hibernate-core-jakarta artifact, alongside switching your javax.persistence imports to jakarta.persistence (Jakarta EE 9). Alternatively, consider migrating to Hibernate ORM 6.1 right away (exclusively based on jakarta.persistence, compatible with EE 9 as well as EE 10) which is the Hibernate version that Spring Boot 3.0 comes with.
+
+The corresponding Hibernate Validator generation is 7.0.x, based on jakarta.validation (Jakarta EE 9). You may also choose to upgrade to Hibernate Validator 8.0 right away (aligned with Jakarta EE 10).
+
+For EclipseLink as the persistence provider of choice, the reference version is 3.0.x (Jakarta EE 9), with EclipseLink 4.0 as the most recent supported version (Jakarta EE 10).
+
+Spring's default JDBC exception translator is the JDBC 4 based SQLExceptionSubclassTranslator now, detecting JDBC driver subclasses as well as common SQL state indications (without database product name resolution at runtime). As of 6.0.3, this includes a common SQL state check for DuplicateKeyException, addressing a long-standing difference between SQL state mappings and legacy default error code mappings.
+
+CannotSerializeTransactionException and DeadlockLoserDataAccessException are deprecated as of 6.0.3 due to their inconsistent JDBC semantics, in favor of the PessimisticLockingFailureException base class and consistent semantics of its common CannotAcquireLockException subclass (aligned with JPA/Hibernate) in all default exception translation scenarios.
+
+For full backwards compatibility with database-specific error codes, consider re-enabling the legacy SQLErrorCodeSQLExceptionTranslator. This translator kicks in for user-provided sql-error-codes.xml files. It can simply pick up Spring's legacy default error code mappings as well when triggered by an empty user-provided file in the root of the classpath.
+
+###Web Applications
+Due to the Jakarta EE migration, make sure to upgrade to Tomcat 10, Jetty 11, or Undertow 2.2.19 with the undertow-servlet-jakarta artifact, alongside switching your javax.servlet imports to jakarta.servlet (Jakarta EE 9). For the latest server generations, consider Tomcat 10.1 and Undertow 2.3 (Jakarta EE 10).
+
+Several outdated Servlet-based integrations have been dropped: e.g. Apache Commons FileUpload (org.springframework.web.multipart.commons.CommonsMultipartResolver), and Apache Tiles as well as FreeMarker JSP support in the corresponding org.springframework.web.servlet.view subpackages. We recommend org.springframework.web.multipart.support.StandardServletMultipartResolver for multipart file uploads and regular FreeMarker template views if needed, and a general focus on REST-oriented web architectures.
+
+As of Spring Framework 6.0, the trailing slash matching configuration option has been deprecated and its default value set to false. This means that previously, the following controller would match both "GET /some/greeting" and "GET /some/greeting/":
+
+@RestController
+public class MyController {
+
+  @GetMapping("/some/greeting")
+  public String greeting() {
+    return "Hello";
+  } 
+
+}
+As of this Spring Framework change, "GET /some/greeting/" doesn't match anymore by default and will result in an HTTP 404 error. Developers should instead configure explicit redirects/rewrites through a proxy, a Servlet/web filter, or even declare the additional route explicitly on the controller handler (like @GetMapping("/some/greeting", "/some/greeting/") for more targeted cases. Until your application fully adapts to this change, you can change the default with the following global Spring MVC configuration:
+
+@Configuration
+public class WebConfiguration implements WebMvcConfigurer {
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+      configurer.setUseTrailingSlashMatch(true);
+    }
+  
+}
+Spring MVC and Spring WebFlux no longer detect controllers based solely on a type-level @RequestMapping annotation. That means interface-based AOP proxying for web controllers may no longer work. Please, enable class-based proxying for such controllers; otherwise the interface must also be annotated with @Controller. See 22154.
+
+HttpMethod is now a class and no longer an enum. Though the public API has been maintained, some migration might be necessary (i.e. change from EnumSet<HttpMethod> to Set<HttpMethod>, use if  else instead of switch). For the rationale behind this decision, see 27697.
+
+The Kotlin extension function to WebTestClient.ResponseSpec::expectBody now returns the Java BodySpec type and no longer uses the workaround type KotlinBodySpec. Spring 6.0 uses Kotlin 1.6, which fixed the bug that needed this workaround (KT-5464). This means that consumeWith is no longer available.
+
+RestTemplate, or rather the HttpComponentsClientHttpRequestFactory, now requires Apache HttpClient 5.
+
+The Spring-provided Servlet mocks (MockHttpServletRequest, MockHttpSession) require Servlet 6.0 now, due to a breaking change between the Servlet 5.0 and 6.0 API jars. They can be used for testing Servlet 5.0 based code but need to run against the Servlet 6.0 API (or newer) on the test classpath. Note that your production code may still compile against Servlet 5.0 and get integration-tested with Servlet 5.0 based containers; just mock-based tests need to run against the Servlet 6.0 API jar.
+
+SourceHttpMessageConverter is not configured by default anymore in Spring MVC and RestTemplate. As a consequence, Spring web applications using javax.xml.transform.Source now need to configure SourceHttpMessageConverter explicitly. Note that the order of converter registration is important, and SourceHttpMessageConverter should typically be registered before "catch-all" converters like MappingJackson2HttpMessageConverter for example.
+
+##New and Noteworthy
+###JDK 17+ and Jakarta EE 9+ Baseline
+Entire framework codebase based on Java 17 source code level now.
+Migration from javax to jakarta namespace for Servlet, JPA, etc.
+Runtime compatibility with Jakarta EE 9 as well as Jakarta EE 10 APIs.
+Compatible with latest web servers: Tomcat 10.1, Jetty 11, Undertow 2.3.
+Early compatibility with virtual threads (in preview as of JDK 19).
+###General Core Revision
+Upgrade to ASM 9.4 and Kotlin 1.7.
+Complete CGLIB fork with support for capturing CGLIB-generated classes.
+Comprehensive foundation for Ahead-Of-Time transformations.
+First-class support for GraalVM native images (see related Spring Boot 3 blog post).
+###Core Container
+Basic bean property determination without java.beans.Introspector by default.
+AOT processing support in GenericApplicationContext (refreshForAotProcessing).
+Bean definition transformation based on pre-resolved constructors and factory methods.
+Support for early proxy class determination for AOP proxies and configuration classes.
+PathMatchingResourcePatternResolver uses NIO and module path APIs for scanning, enabling support for classpath scanning within a GraalVM native image and within the Java module path, respectively.
+DefaultFormattingConversionService supports ISO-based default java.time type parsing.
+###Data Access and Transactions
+Support for predetermining JPA managed types (for inclusion in AOT processing).
+JPA support for Hibernate ORM 6.1 (retaining compatibility with Hibernate ORM 5.6).
+Upgrade to R2DBC 1.0 (including R2DBC transaction definitions).
+Aligned data access exception translation between JDBC, R2DBC, JPA and Hibernate.
+Removal of JCA CCI support.
+###Spring Messaging
+RSocket interface client based on @RSocketExchange service interfaces.
+Early support for Reactor Netty 2 based on Netty 5 alpha.
+Support for Jakarta WebSocket 2.1 and its standard WebSocket protocol upgrade mechanism.
+###General Web Revision
+HTTP interface client based on @HttpExchange service interfaces.
+Support for RFC 7807 problem details.
+Unified HTTP status code handling.
+Support for Jackson 2.14.
+Alignment with Servlet 6.0 (while retaining runtime compatibility with Servlet 5.0).
+###Spring MVC
+PathPatternParser used by default (with the ability to opt into PathMatcher).
+Removal of outdated Tiles and FreeMarker JSP support.
+###Spring WebFlux
+New PartEvent API to stream multipart form uploads (both on client and server).
+New ResponseEntityExceptionHandler to customize WebFlux exceptions and render RFC 7807 error responses.
+Flux return values for non-streaming media types (no longer collected to List before written).
+Early support for Reactor Netty 2 based on Netty 5 alpha.
+JDK HttpClient integrated with WebClient.
+###Observability
+Direct Observability instrumentation with Micrometer Observation in several parts of the Spring Framework. The spring-web module now requires io.micrometer:micrometer-observation:1.10+ as a compile dependency.
+
+RestTemplate and WebClient are instrumented to produce HTTP client request observations.
+Spring MVC can be instrumented for HTTP server observations using the new org.springframework.web.filter.ServerHttpObservationFilter.
+Spring WebFlux can be instrumented for HTTP server observations using the new org.springframework.web.filter.reactive.ServerHttpObservationFilter.
+Integration with Micrometer Context Propagation for Flux and Mono return values from controller methods.
+###Testing
+Support for testing AOT-processed application contexts on the JVM or within a GraalVM native image.
+Integration with HtmlUnit 2.64+ request parameter handling.
+Servlet mocks (MockHttpServletRequest, MockHttpSession) are based on Servlet API 6.0 now.
+New MockHttpServletRequestBuilder.setRemoteAddress() method.
+The four abstract base test classes for JUnit 4 and TestNG no longer declare listeners via @TestExecutionListeners and instead now rely on registration of default listeners.
+
+
+
+
+
+
+
+
+
+#Spring Framework 6.1 Release Notes
+##Upgrading From Spring Framework 6.0
+###Baseline upgrades
+Spring Framework 6.1 raises its minimum requirements with the following libraries:
+
+SnakeYAML 2.0
+Jackson 2.14
+Kotlin Coroutines 1.7
+Kotlin Serialization 1.5
+###Removed APIs
+Several deprecated classes, constructors, and methods have been removed across the code base. See 29449 and 30604.
+
+###Parameter Name Retention
+LocalVariableTableParameterNameDiscoverer has been removed in 6.1. Consequently, code within the Spring Framework and Spring portfolio frameworks no longer attempts to deduce parameter names by parsing bytecode. If you experience issues with dependency injection, property binding, SpEL expressions, or other use cases that depend on the names of parameters, you should compile your Java sources with the common Java 8+ -parameters flag for parameter name retention (instead of relying on the -debug compiler flag) in order to be compatible with StandardReflectionParameterNameDiscoverer. The Groovy compiler also supports a -parameters flag for the same purpose. With the Kotlin compiler, use the -java-parameters flag.
+
+Maven users need to configure the maven-compiler-plugin for Java source code:
+
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <parameters>true</parameters>
+    </configuration>
+</plugin>
+Gradle users need to configure the JavaCompile task for Java source code, either with the Kotlin DSL:
+
+tasks.withType<JavaCompile>() {
+    options.compilerArgs.add("-parameters")
+}
+Or the Groovy DSL:
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
+}
+Similarly, Gradle users need to configure the GroovyCompile task for Groovy source code, either with the Kotlin DSL:
+
+tasks.withType<GroovyCompile>() {
+    groovyOptions.parameters = true
+}
+Or the Groovy DSL:
+
+tasks.withType(GroovyCompile).configureEach {
+    groovyOptions.parameters = true
+}
+Sometimes it is also necessary to manually configure your IDE.
+
+In IntelliJ IDEA, open Settings and add -parameters to the following field.
+
+Build, Execution, Deployment → Compiler → Java Compiler → Additional command line parameters
+In Eclipse IDE, open Preferences and activate the following checkbox.
+
+Java → Compiler → Store information about method parameters (usable via reflection)
+In VSCode, edit or add the .settings/org.eclipse.jdt.core.prefs file with the following content:
+
+org.eclipse.jdt.core.compiler.codegen.methodParameters=generate
+###Core Container
+Aligned with the deprecation of java.net.URL constructors in JDK 20, URL resolution is now consistently performed via URI, including the handling of relative paths. This includes behavioral changes for uncommon cases such as when specifying a full URL as a relative path. See 29481 and 28522.
+
+AutowireCapableBeanFactory.createBean(Class, int, boolean) is deprecated now, in favor of the convention-based createBean(Class). The latter is also consistently used internally in 6.1 – for example, in SpringBeanJobFactory for Quartz and SpringBeanContainer for Hibernate.
+
+Array-to-collection conversion prefers a List result rather than a Set for a declared target type of Collection.
+
+ThreadPoolTaskExecutor and ThreadPoolTaskScheduler enter a graceful shutdown phase when the application context starts to close. As a consequence, further task submissions are not accepted during stop or destroy callbacks in other components anymore. If the latter is necessary, switch the executor/scheduler's acceptTasksAfterContextClose flag to true, at the expense of a longer shutdown phase.
+
+Message resolution through the ApplicationContext (accessing its internal MessageSource) is only allowed while the context is still active. After context close, getMessage attempts will throw an IllegalStateException now.
+
+Spring's declarative caching infrastructure detects reactive method signatures, e.g. returning a Reactor Mono or Flux, and specifically processes such methods for asynchronous caching of their produced values rather than trying to cache the returned Reactive Streams Publisher instances themselves. This requires support in the target cache provider, e.g. with CaffeineCacheManager being set to setAsyncCacheMode(true). For existing applications which rely on synchronous caching of custom Mono.cache()/Flux.cache() results, we recommend revising this towards 6.1-style caching of produced values; if such a revision is not immediately possible/desirable, you may set the system property "spring.cache.reactivestreams.ignore=true" (or put a similar entry into a spring.properties file on the classpath).
+
+When building a native image, the verbose logging about pre-computed fields has been removed by default, and can be restored by passing -Dspring.native.precompute.log=verbose as a native-image compiler build argument to display related detailed logs.
+
+###Data Access and Transactions
+@TransactionalEventListener rejects invalid @Transactional usage on the same method: only allowed as REQUIRES_NEW (possibly in combination with @Async).
+
+JPA bootstrapping now fails in case of an incomplete Hibernate Validator setup (e.g. without an EL provider), making such a scenario easier to debug.
+
+Since JpaTransactionManager with HibernateJpaDialect translates commit/rollback exceptions to DataAccessException subclasses wherever possible, a Hibernate transaction exception formerly propagated as a generic JpaSystemException may show up as e.g. CannotAcquireLockException now. For a non-translatable fallback exception, JpaSystemException will be consistently thrown for commit/rollback now, instead of the former TransactionSystemException propagated from rollback.
+
+JDBC setNull handling has been revised to bypass driver-level getParameterType resolution on PostgreSQL and MS SQL Server by default, as of 25679 in 6.1.2. This is a performance optimization to avoid further roundtrips to the DBMS just for parameter type resolution which is known to make a significant difference on PostgreSQL and MS SQL Server specifically. If you happen to see a side effect e.g. for a null byte array, consider revising your SQL statement or your application-specified type information (e.g. through providing a SqlParameterValue instead of a plain null value). Otherwise, you may explicitly set the spring.jdbc.getParameterType.ignore=false flag as a system property (or in a spring.properties file in the root of the classpath) to restore full getParameterType resolution.
+
+###Web Applications
+Spring MVC and WebFlux now have built-in method validation support for controller method parameters with @Constraint annotations. To be in effect, you need to 1) opt out of AOP-based method validation by removing @Validated at the controller class level, 2) ensure mvcValidator or webFluxValidator beans are of type jakarta.validation.Validator (for example, LocalValidatorFactoryBean), and 3) have constraint annotations directly on method parameters. Where method validation is required (i.e. constraint annotations are present), model attribute and request body arguments with @Valid are also validated at the method level, and in that case no longer validated at the argument resolver level, thereby avoiding double validation. BindingResult arguments are still respected, but if not present or if method validation fails on other parameters, then a MethodValidationException raised. That's not handled yet in 6.1 M1, but will be in M2 with 30644. See 29825 for more details on the support in M1, and also the umbrella issue 30645 for all other related tasks and for providing feedback.
+
+The format for MethodArgumentNotValidException and WebExchangeBindException message arguments has changed. Errors are now joined with ", and ", without single quotes and brackets. Field errors are resolved through the MessageSource with nothing further such as the field name added. This gives applications full control over the error format by customizing individual error codes. See 30198 and also planned documentation improvement 30653.
+
+The default order of mappings has been refined to be more consistent by changing RouterFunctionMapping order from 3 to -1 in Spring MVC. That means RouterFunctionMapping is now always ordered before RequestMappingHandlerMapping in both Spring MVC and Spring WebFlux. See 30278 for more details.
+
+The throwExceptionIfNoHandlerFound property of DispatcherHandler is now set to true by default and is deprecated. The resulting exception is handled by default as a 404 error so it should result in the same outcome. Likewise, ResourceHttpRequestHandler now raises NoResourceFoundException, which is also handled by default as a 404, and should have the same outcome for most applications. See 29491.
+
+@RequestParam, @RequestHeader, and other controller method argument annotations now use the defaultValue if the input is a non-empty String without text.
+
+ResponseBodyEmitter now completes the response if the exception is not an IOException, see issue 30687.
+
+Preflight checks are now executed at the start of the HandlerInteceptor chain and not at the end.
+
+The HTTP interface client no longer enforces a 5 second default timeout on methods with a blocking signature, instead relying on default timeout and configuration settings of the underlying HTTP client. See 30248.
+
+The HTTP server Observability instrumentation in WebFlux was limited and was not properly observing errors. As a result, the WebFlux ServerHttpObservationFilter is now deprecated in favor of direct instrumentation on the WebHttpHandlerBuilder. See 30013.
+
+ReactorResourceFactory class has been moved from the org.springframework.http.client.reactive package to the org.springframework.http.client one.
+
+To reduce memory usage in RestClient and RestTemplate, most ClientHttpRequestFactory implementations no longer buffer request bodies before sending them to the server. As a result, for certain content types such as JSON, the contents size is no longer known, and a Content-Length header is no longer set. If you would like to buffer request bodies like before, simply wrap the ClientHttpRequestFactory you are using in a BufferingClientHttpRequestFactory.
+
+Jackson ParameterNamesModule is now part of the well-known modules automatically registered by Jackson2ObjectMapperBuilder when present in the classpath. This can introduce changes of behavior in JSON serialization/deserialization as mentioned in the module documentation linked above. In such case, additional @JsonCreator or @JsonProperty("propertyName") annotations may be required. If you prefer avoid enabling such module, it is possible to use Jackson2ObjectMapperBuilder#modules in order to disable automatic module registration.
+
+ReactorClientHttpConnector now implements SmartLifecycle to provide lifecycle management capabilities. As a consequence, it now requires spring-context dependency.
+
+###Messaging Applications
+The RSocket interface client no longer enforces a 5 second default timeout on methods with a blocking signature, instead relying on default timeout and configuration settings of the RSocket client, and the underlying RSocket transport. See 30248.
+
+In an effort to reduce the potential for security vulnerabilities in the Spring Expression Language (SpEL) to adversely affect Spring applications, the team has decided to disable support for evaluating SpEL expressions from untrusted sources by default. Within the core Spring Framework, this applies to the SpEL-based selector header support in WebSocket messaging, specifically in the DefaultSubscriptionRegistry. The selector header support will remain in place but will have to be explicitly enabled beginning with Spring Framework 6.1 (see 30550). For example, a custom implementation of WebSocketMessageBrokerConfigurer can override the configureMessageBroker() method and configure the selector header name as follows: registry.enableSimpleBroker().setSelectorHeaderName("selector");.
+
+###Testing
+By default, if an error is encountered during build-time AOT processing, an exception will be thrown, and the overall process will fail immediately. If you would prefer that build-time AOT processing continue after errors are encountered, you can disable the failOnError mode which results in errors being logged at WARN level or with greater detail at DEBUG level. The failOnError mode can be disabled from the command line or a build script by setting a JVM system property named spring.test.aot.processing.failOnError to false. As an alternative, you can set the same property via the SpringProperties mechanism.
+
+##New and Noteworthy
+###Core Container
+General compatibility with virtual threads and JDK 21 overall.
+Configuration options for virtual threads: a dedicated VirtualThreadTaskExecutor and a virtual threads mode on SimpleAsyncTaskExecutor, plus an analogous SimpleAsyncTaskScheduler with a new-thread-per-task strategy and a virtual threads mode.
+Lifecycle integration with Project CRaC for JVM checkpoint restore (see related documentation), including a -Dspring.context.checkpoint=onRefresh option.
+Lifecycle integrated pause/resume capability and parallel graceful shutdown for ThreadPoolTaskExecutor and ThreadPoolTaskScheduler as well as SimpleAsyncTaskScheduler.
+A -Dspring.context.exit=onRefresh option is available with AppCDS training runs as the main use-case; see 31595.
+Reachability metadata contribution improvements, preparing for upcoming GraalVM changes: missing reachability metadata will be soon reported as runtime exceptions for better developer experience; see 31213.
+New ModuleResource: Resource implementation for java.lang.Module resolution, performing getInputStream() access via Module.getResourceAsStream.
+Custom @Component stereotype annotations may now use @AliasFor to configure an annotation attribute override for the component's name. Consequently, the name of the annotation attribute that is used to specify the bean name is no longer required to be value, and custom stereotype annotations can now declare an attribute with a different name (such as name) and annotate that attribute with @AliasFor(annotation = Component.class, attribute = "value").
+Convention-based @Component stereotype names based on the value attribute are now deprecated in favor of explicit @AliasFor declarations. See previous bullet point.
+Spring now finds all @ComponentScan and @PropertySource annotations; see 30941.
+Async/reactive destroy methods – for example, on R2DBC ConnectionFactory; see 26691.
+Async/reactive cacheable methods, including corresponding support in the Cache interface and in CaffeineCacheManager; see 17559 and 17920.
+Reactive @Scheduled methods (including Kotlin coroutines); see 22924.
+Selecting a specific target scheduler for each @Scheduled method; see 20818.
+@Scheduled methods for one-time tasks (with just an initial delay); see 31211.
+Observation instrumentation of @Scheduled methods; see 29883.
+Spring Framework will not produce observations out-of-the-box for @Async or @EventListener annotated methods, but will help you with propagating context (e.g. MDC logging with the current trace id) for the execution of those methods. See the new ContextPropagatingTaskDecorator, the relevant reference documentation section, and issue 31130.
+Validator factory methods for programmatic validator implementations; see 29890.
+Validator.validateObject(Object) with returned Errors and Errors.failOnError method for flexible programmatic usage; see 19877.
+MethodValidationInterceptor throws MethodValidationException subclass of ConstraintViolationException with violations adapted to MessageSource resolvable codes, and to Errors instances for @Valid arguments with cascaded violations; see 29825 and umbrella issue 30645.
+Support for resource patterns in @PropertySource; see 21325.
+Support for Iterable and MultiValueMap binding in BeanWrapper and DirectFieldAccessor; see 907 and 26297.
+Revised Instant and Duration parsing (aligned with Spring Boot); see 22013.
+Spring AOP now supports Kotlin Coroutines; see 22462.
+ControlFlowPointcut has been revised to make its internals more open to extension by subclasses.
+ControlFlowPointcut now provides built-in pattern matching support for method names, analogous to the pattern matching support in NameMatchMethodPointcut. Users can provide one or more method name patterns when constructing a ControlFlowPointcut. Alternatively, subclasses can override one of the new protected isMatch(...) methods – for example, to support regular expressions instead of simple pattern matching.
+New getMergedRepeatableAnnotationAttributes() method in AnnotatedTypeMetadata that provides dedicated support for finding merged repeatable annotation attributes with full @AliasFor semantics.
+###Spring Expression Language (SpEL)
+Numerous improvements to the SpEL Language Reference, including but not limited to:
+Supported letters in variable names
+Limitation regarding minimum values for numeric literals
+Safe navigation support for selection and projection
+Safe navigation semantics within compound expressions
+Official documentation of the power operator, custom overloading operators, between operator, increment and decrement operators, as well as the repeat and character subtraction operators for strings
+Numerous bug fixes.
+Improved support for constructor and method invocations that use varargs.
+The maximum length of a SpEL expression used in an ApplicationContext is now configurable via the spring.context.expression.maxLength Spring property.
+Support for letters other than A-Z in property/field/variable names in SpEL expressions; see 30580.
+Support for registering a MethodHandle as a SpEL function; see related documentation.
+###Data Access and Transactions
+Common TransactionExecutionListener contract with beforeBegin/afterBegin, beforeCommit/afterCommit and beforeRollback/afterRollback callbacks triggered by the transaction manager (for thread-bound as well as reactive transactions); see 27479.
+@TransactionalEventListener and TransactionalApplicationListener always run in the original thread, independent from an async multicaster setup; see 30244.
+@TransactionalEventListener and TransactionalApplicationListener can participate in reactive transactions when the ApplicationEvent gets published with the transaction context as its event source; see 27515.
+A failed CompletableFuture triggers a rollback for an async transactional method; see 30018.
+DataAccessUtils provides various optionalResult methods with a java.util.Optional return type; see 27735.
+The new JdbcClient provides a unified facade for query/update statements on top of JdbcTemplate and NamedParameterJdbcTemplate, with flexible parameter options as well as flexible result retrieval options; see 30931.
+SimplePropertyRowMapper and SimplePropertySqlParameterSource strategies for use with JdbcTemplate/NamedParameterJdbcTemplate as well as JdbcClient, providing flexible constructor/property/field mapping for result objects and named parameter holders; see 26594.
+SimpleJdbcInsert now provides support for quoted identifiers which can be enabled via the new usingQuotedIdentifiers() builder method.
+SQLExceptionSubclassTranslator can be configured with an overriding customTranslator; see 24634.
+The R2DBC DatabaseClient provides bindValues(Map) for a pre-composed map of parameter values and bindProperties(Object) for parameter objects based on bean properties or record components; see 27282.
+The R2DBC DatabaseClient provides mapValue(Class) for plain database column values and mapProperties(Class) for result objects based on bean properties or record components; see 26021.
+BeanPropertyRowMapper and DataClassRowMapper available for R2DBC as well; see 30530.
+JpaTransactionManager with HibernateJpaDialect translates Hibernate commit/rollback exceptions to DataAccessException subclasses wherever possible, e.g. to CannotAcquireLockException, aligned with the exception hierarchy thrown from persistence exception translation for repository operations; see 31274 for the primary motivation.
+###Web Applications
+Spring MVC and WebFlux now have built-in method validation support for controller method parameters with @Constraint annotations. That means you no longer need @Validated at the controller class level to enable method validation via an AOP proxy. Built-in method validation is layered on top of the existing argument validation for model attribute and request body arguments. The two are more tightly integrated and coordinated, e.g. avoiding cases with double validation. See the upgrade notes for migration details and umbrella issue 30645 for all related tasks and feedback.
+Method validation is supported with method parameters that are collections, arrays, or maps of objects.
+The HandlerMethodValidationException raised by the new built-in method validation exposes a Visitor API to process validation errors by controller method parameter type, e.g. @RequestParameter, @PathVariable, etc.
+MethodValidationInterceptor supports validation of Mono and Flux method parameters; see issue 20781.
+Spring MVC raises NoHandlerFoundException by default if there is no matching handler or ResponseStatusException(NOT_FOUND) if there is no matching static resource, and also handles these with the aim of consistent handling for 404 errors out of the box, including RFC 7807 responses; see 29491.
+ErrorResponse allows customization of ProblemDetail type via MessageSource and use of custom ProblemDetail through its builder.
+Spring MVC resets the Servlet response buffer prior to handling an error and rendering an error response.
+DataBinder now supports constructor binding where argument values are looked up through a NameResolver (e.g. in the HTTP request parameters map), and those lookups can be customized through an @BindParam annotation. This also supports nested object structures through the invocation of constructors necessary to initialize constructor parameters. The feature is integrated in the data binding of Spring MVC and WebFlux and provides a safer option for data binding of expected parameters only; see Model Design for more details. Spring MVC and WebFlux now support data binding via constructors, including nested objects constructors
+@ControllerAdvice and @RestControllerAdvice can now specify custom component names via their new name attributes.
+WebFlux provides an option for blocking execution of controller methods with synchronous signatures on a different Executor such as the VirtualThreadTaskExecutor; see Blocking Execution in the reference documentation.
+SseEmitter now formats data with newlines according to the SSE format.
+New RestClient, a synchronous HTTP client that offers an API similar to WebClient, but sharing infrastructure with the RestTemplate; see 29552.
+Jetty-based ClientHttpRequestFactory for use with RestTemplate and RestClient; see 30564.
+JDK HttpClient-based ClientHttpRequestFactory for use with RestTemplate and RestClient; see 30478.
+Reactor Netty-based ClientHttpRequestFactory for use with RestTemplate and RestClient; see 30835.
+Improved buffering in various ClientHttpRequestFactory implementations; see 30557.
+HTTP Interface client with built-in adapters for the new RestClient and RestTemplate in addition to the existing adapter for the reactive WebClient.
+HTTP Interface client supports MultipartFile as an input method parameter.
+HTTP Interface client supports UriBuilderFactory as an input method parameter to use instead of the one the underlying client is configured with – for example, if it's necessary to vary the baseUri dynamically.
+The @HttpExchange annotation used on HTTP interface methods is now supported for server-side handling in Spring MVC and WebFlux as an alternative to @RequestMapping; see @HttpExchange for more details and guidance.
+JVM checkpoint restore support added to Reactor Netty-based ClientHttpRequestFactory for use with RestTemplate and RestClient and to ClientHttpConnector for use with WebClient; see 31280, 31281, and 31180.
+General Coroutines support revision in WebFlux, which includes CoroutineContext propagation in CoWebFilter, CoroutineContext propagation in coRouter DSL with filter, a new context function in coRouter DSL, support for @ModelAttribute with suspending function in WebFlux, and consistent usage of the Mono variant of awaitSingle().
+Support for Kotlin parameter default and optional values in HTTP handler methods; see 21139 and 29820.
+###Messaging Applications
+STOMP messaging supports a new preserveReceiveOrder config option for ordered processing of messages received from a given client. That's in addition to the existing preservePublishOrder flag for messages published to clients; see the Order of Messages section of the reference docs.
+The @RSocketExchange annotation used on RSocket interface methods is now supported for responder-side handling as an alternative to @MessageMapping; see @RSocketExchange for more details and guidance.
+Interface parameter annotations are detected for messaging handler methods as well (analogous to web handler methods).
+The SpEL-based selector header support in WebSocket messaging is now disabled by default and must be explicitly enabled; see 30550 and the upgrade notes for migration details.
+Observability support for JMS: Spring Framework now produces observations when publishing messages with JmsTemplate and when processing messages with MessageListener or @JmsListener; see the reference docs section and issue 30335.
+###Testing
+ApplicationContext failure threshold support: avoids repeated attempts to load a failing ApplicationContext in the TestContext framework, based on a failure threshold which defaults to 1 but can be configured via a system property; see related documentation.
+@⁠SpringJUnitConfig and @⁠SpringJUnitWebConfig now declare loader attributes that support custom ContextLoader configuration.
+A ContextCustomizerFactory can now be registered for a particular test class via the new @ContextCustomizerFactories annotation.
+Numerous enhancments for @TestPropertySource:
+Support for resource patterns (i.e., wildcards) in locations.
+Multiple inlined properties can be supplied via a single text block.
+Property file encoding can be configured via the new encoding attribute.
+A custom PropertySourceFactory can be configured via the new factory attribute in order to support custom property file formats such as JSON, YAML, etc.
+Support for recording asynchronous events with @RecordApplicationEvents; see 30020.
+Record events from threads other than the main test thread.
+Assert events from a separate thread – for example with Awaitility.
+When used with JUnit Jupiter, @​BeforeTransaction and @​AfterTransaction methods can now make use of parameter injection to have Spring components (such as an @Autowired DataSource) injected directly into the method.
+JdbcTestUtils has new overloaded methods that accept a JdbcClient instead of JdbcOperations.
+MockMvc now supports initialization of filters with init parameters and mapping to specific dispatch types.
+MockMvcWebTestClient now supports the RequestPostProcessor hook which can, for example, allow varying user identity across tests; see 31298.
+MockRestServiceServer supports the new RestClient in addition to the RestTemplate.
+Support for null in MockHttpServletResponse.setCharacterEncoding(); see 30341.
+Errors encountered during build-time AOT processing now cause the build to fail immediately. This behavior can be disabled by setting the spring.test.aot.processing.failOnError property to false. See the upgrade notes for migration details.
+New @⁠DisabledInAotMode annotation that can be used to disable AOT build-time processing of a test's ApplicationContext and to disable an entire test class or a single test method at run time when the test suite is run with AOT optimizations enabled.
+@Resource may now be used for dependency injection in test classes when running in AOT mode.
+
+
+
+
+
+
+
+#Spring Framework 6.2 Release Notes
+##Upgrading From Spring Framework 6.1
+###Baseline Upgrades
+Spring Framework 6.2 raises its minimum requirements with the following libraries:
+
+For GraalVM native image support only, Hibernate 6.5
+FreeMarker 2.3.33
+HtmlUnit 4.2
+Codecs and converters now officially support Protobuf 4.x, raising our baseline to Protobuf 3.29.
+We also recommend an upgrade to Jackson 2.18/2.19 while preserving runtime compatibility with Jackson 2.15+ for the time being.
+
+###Removed APIs
+Several deprecated classes, constructors, and methods have been removed across the code base. See 30608, 31492, and 33123.
+
+###Core Container
+6.2 comes with a slightly revised autowiring algorithm where among a set of candidate beans that match by type, parameter name matches and @Qualifier("...") matches (against the target bean name) overrule @jakarta.annotation.Priority ranking whereas they were previously checked the other way around. That said, since we do not recommend mixing and matching those qualification mechanisms and generally do not recommend @Priority for identifying single candidates (rather just for ranking multiple candidates in an injected collection), we do not expect common regressions here. Note that @Primary beans always come first (and as a side note, 6.2 introduces the notion of @Fallback beans as well).
+
+The core container will now consistently reject invalid @Configuration class setups, For example:
+
+a @Bean method that declares a void return type
+a @Bean method that is also annotated with @Autowired
+6.2 also comes with deeper generic type matching. If an injection point that previously matched does not match anymore, double-check your generic signatures at that injection point (e.g. your constructor argument) and for the bean type on the bean definition (e.g. the return type of your @Bean method). Spring is effectively less lenient in accepting fallback matches now, insisting on the resolvable part of the type signature to match even if the remaining part is leniently accepted with unresolvable type variables or wildcards.
+
+6.2 revises the core container's internal locking arrangement for a mix of strict and lenient locking. Background bean initialization (as mentioned below) always operates with lenient locking, next to the main bootstrap thread which applies strict locking. For any other threads hitting the application context at startup, the container tries to infer appropriate locking with a preference for lenient; as of 6.2.6, this can be overridden with spring.locking.strict=true (as a JVM system property or in a spring.properties file in the root of the classpath) to restore previous behavior.
+
+Classpath scanning comes with internal jar caching now which is beneficial for repeated component scan attempts. However, this can cause regressions if such caching is unexpected: As of 6.2.6, you may revert to the previous behavior through setUseCaches(false) on PathMatchingResourcePatternResolver.
+
+Component scanning happens early in the BeanFactory initialization and, as such, is not suitable to be guarded by a condition that is evaluated late. We now fail hard if you use @ComponentScan with a REGISTER_BEAN condition (such as Spring Boot's @ConditionalOnBean).
+
+We've also made it clearer that bean definition overriding is discouraged in production code, and the container now logs each override at INFO level. While not recommended, you can silence those logs by setting the allowBeanDefinitionOverriding flag to true on the bean factory or application context before it is refreshed.
+
+###Property Placeholder Resolution
+The parser for property placeholders has been completely rewritten to be as lenient as possible. As a result, certain constructs that previously worked by accident rather than by design are no longer possible.
+
+A typical placeholder can be described as ${key:default} where default is evaluated if key is not present. Placeholder keys that have the : character in them need to be escaped if a literal resolution is expected.
+
+For instance, if a property source can resolve sub://host to example.com, the placeholder should be written as ${sub\://host} (assuming \ being configured as the escape character). Note that the backslash must be doubled in configuration properties:
+
+my.host=${sub\\://host}
+If you can control the keys, we strongly encourage you to migrate to a format where : isn't used as part of the key.
+
+As of 6.2, the placeholder can also be escaped, e.g. This is a \\${test}! evaluates to This is ${test}! in case you need to use the placeholder syntax literally. If you used the escaped character right before the placeholder, you will need to modify your configuration structure to move \\ in the value itself.
+
+###Spring Expression Language (SpEL)
+PropertyAccessor implementations that specify target types for which they should apply now properly take precedence over generic, fallback property accessors such as the ReflectivePropertyAccessor. Consequently, the order in which accessors are evaluated may change when upgrading to Spring Framework 6.2. If you notice unexpected behavior for property access in SpEL expressions, you may need to revise the canRead() and canWrite() implementations of the property accessors used in your application or register accessors in a different order.
+
+###HTTP Clients
+The behavior of the RestClient API has been changed to better align with other clients and to fix observability issues. Previously, writing the following would "fire and forget" an HTTP request and would leave observation scopes hanging:
+
+ResponseSpec spec = restClient.get().uri("/spring").retrieve();
+As of 6.2, this is now a no-op and applications must invoke a terminal operation on the ResponseSpec to have any side effect. For the previous case, developers will need to update their code to:
+
+ResponseEntity<Void> response = restClient.get().uri("/spring").retrieve().toBodilessEntity();
+###Web Applications
+Static resource locations configured as a String now have a trailing slash appended if not present. This is necessary because otherwise the path segment after the last slash is dropped when appending the request path with Resource#createRelative. This does not apply to static resource locations configured as a Resource.
+
+org.webjars:webjars-locator-core support implemented in WebJarsResourceResolver is deprecated due to efficiency issues as of Spring Framework 6.2 and is superseded by org.webjars:webjars-locator-lite support implemented in LiteWebJarsResourceResolver.
+
+WebFlux endpoints returning empty response bodies (like Mono.empty()) will not write "Content-Type" headers anymore as this was an invalid behavior (see #32622).
+
+###Messaging Applications
+The JMS DefaultMessageListenerContainer comes with revised idleReceivesPerTaskLimit semantics when using its default executor: Core threads always stay alive now, with only surplus consumers (between concurrentConsumers and maxConcurrentConsumers) timing out after the specified number of idle receives. Only in combination with a maxMessagesPerTask does idleReceivesPerTaskLimit have an effect on core consumers as well, as inferred for an external thread pool for dynamic rescheduling of all consumer tasks.
+
+STOMP over WebSocket configuration now orders components it declares at 0 in order to be ahead of Boot's WebServerStartStopLifecycle default phase. See #27519
+
+###Testing
+Support for HtmlUnit has moved to a new major release that requires some changes when upgrading, see Migrating from HtmlUnit 2.x.x to HtmlUnit 3.x.x for additional details. If you are using HtmlUnit with Selenium, please note that the coordinates of the driver have changed, and the version now matches the Selenium version: org.seleniumhq.selenium:htmlunit3-driver:X.Y.Z, where X.Y.Z is your Selenium version.
+
+##New and Noteworthy
+###Support for escaping property placeholders
+Property placeholders are a way to replace a property from the environment in an arbitrary String. Assuming that customer.name is set to "John Smith" in the Environment, "Customer ${customer.name}" would resolve to "Customer John Smith". There are corner cases where you’d like to retain the original value rather than having it resolved. Spring Framework 6.2 allows you to escape a placeholder using a configurable escape character (backslash by default). Taking our previous example, "Customer \${customer.name}" resolves now to "Customer ${customer.name}".
+
+Note that the backslash must be doubled in configuration properties.
+
+The escaping applies to the separator as well, see the "Property Placeholder Resolution" section above.
+
+###Support for fallback beans
+A fallback bean is used if no bean of that type has been provided. This is essentially a companion of @Primary without the trade-off of having to specify it. Consider that a component requires MyService to be defined. You can provide a default implementation for the service, but you’d like that if a user specifies one, it can be injected by type transparently. So far, the user had to configure their specific bean with @Primary to make sure it is used, since two beans of that type are defined now.
+
+As of Spring Framework 6.2.0 you can craft your configuration with @Fallback:
+
+@Configuration
+class MyConfiguration {
+
+	@Bean
+	MyComponent myComponent(MyService service) {
+    	//...
+	}
+
+	@Bean
+	@Fallback
+	MyService defaultMyService() {
+    	//...
+	}
+
+}
+If no other MyService bean is defined, defaultMyService is used. Otherwise, the container will pick transparently the one that’s been defined externally.
+
+See the dedicated section in the reference documentation.
+
+###Background bean initialization
+Individual beans can be initialized in the background using the newly introduced bootstrap attribute.
+
+@Configuration
+class MyConfiguration {
+
+    @Bean(bootstrap = BACKGROUND)
+    MyExpensiveComponent myComponent() {
+   	 ...
+    }
+
+}
+Check the reference guide for more details about this new feature.
+
+###Enhanced indexing support in SpEL
+The Spring Expression Language (SpEL) now offers first-class support for indexing into custom structures via new IndexAccessor and CompilableIndexAccessor SPIs plus a built-in ReflectiveIndexAccessor implementation of those SPIs (see reference documentation), and SpEL now provides safe navigation support for indexing into arrays, collections, strings, maps, objects, and custom structures (see reference documentation). Furthermore, the documentation for SpEL's property navigation and indexing support has been fully revised along with official documentation for indexing into strings and objects in SpEL expressions.
+
+###Bean overriding in tests, @TestBean, @MockitoBean, and @MockitoSpyBean
+See our new reference documentation section on these features and the dedicated blog post published during the milestones phase.
+
+###AssertJ support for MockMvc
+We love AssertJ! While Spring Boot has already jumped on that train a while ago and provides several testing facilities using it, the framework team has been more conservative. At the same time, we recognize that our Hamcrest support may not fit everyone’s needs: the use of static imports make the API less discoverable and writing custom assertions is harder. Spring Framework now provides an exhaustive support for testing your web application with MockMvc and AssertJ.
+
+Building an MvcTester instance is more straightforward, with dedicated factory methods on the class itself. If you have a WebApplicationContext handy, this is as easy as MvcTester.from(webApplicationContext). If you want to test only a controller in a unit test, you can do so as follows:
+
+MvcTester mvc = MvcTester.of(List.of(new HelloController()), builder ->
+builder.defaultRequest(get("/hello").accept(MediaType.APPLICATION_JSON)).build());
+Once you have an instance you can perform your usual requests and wrap that in AssertJ’s standard assertThat:
+
+assertThat(mvc.perform(get("/vehicle/{id}", "12").accept(MediaType.TEXT_PLAIN)))
+        .hasStatusOk()
+        .body().isEqualTo("Honda Civic");
+This covers the same features as the existing Hamcrest matchers, and extends it with advanced JSON support, for instance:
+
+assertThat(mvc.perform(get("/message")))
+        .body().json()
+        .isLenientlyEqualTo(new ClassPathResource("samples/message.json"));
+See the reference documentation for more on that.
+
+###Dynamic properties can now be registered from within a test's ApplicationContext
+You can now register dynamic properties in tests by contributing DynamicPropertyRegistrar beans to the context.
+
+See related documentation.
+
+###Constructor Data Binding to Lists, Maps, and Arrays
+While setter binding is driven by request values, and may need to be restricted through allow and disallow lists, constructor binding is driven by the constructor arguments that already declare exactly and only what is expected. In 6.2 constructor binding has been enhanced to support List, Map, and array arguments giving it parity with setter binding.
+
+See #32426
+
+###Data Binding from Headers
+In addition to Servlet request parameters, multiparts, and path variables, data binding now also supports binding request header values to @ModelAttribute controller method parameters.
+
+See #32676.
+
+###Fragment Rendering
+Spring MVC and WebFlux support rendering multiple views in one request, or to create a stream of rendered views. This helps to support HTML-over-the-wire libraries such as htmx.org and @hotwired/turbo.
+
+See HTML Fragments in the reference documentation.
+
+###Content negotiation for @ExceptionHandler methods
+@ExceptionHandler methods now support content negotiation during error handling. It allows selecting a content type for error responses depending on what the client requested.
+
+Here's a code snippet showing this feature in action:
+
+@ExceptionHandler(produces = "application/json")
+public ResponseEntity<ErrorMessage> handleJson(IllegalArgumentException exc) {
+    return ResponseEntity.badRequest().body(new ErrorMessage(exc.getMessage(), 42));
+}
+
+@ExceptionHandler(produces = "text/html")
+public String handle(IllegalArgumentException exc, Model model) {
+    model.addAttribute("error", new ErrorMessage(exc.getMessage(), 42));
+    return "errorView";
+}
+Here, automated clients will get a JSON response, while browsers will display an HTML error page with custom messages.
+
+###URL Parsing
+Two new URL parser implementations replace the regular expression based parsing that led to vulnerability reports such as CVE-2024-22262 and others after it. The parser implementation used by default follows closely RFC 3986 syntax, in effect expecting URL's to be well formed. The other parser follows the URL Living URL standard, and provides lenient handling of a wide range of user typed URL's, which allows parsing URL's in the same way that browsers do, and is important in scenarios where a server application parses a user provided URL that is then returned to and may be used by a browser (e.g. redirect or as a link in HTML). See URI Parsing in the reference documentation.
+
+// This is using the "strict" RFC parser
+UriComponents uriComponents = UriComponentsBuilder.fromUriString(uri, ParserType.RFC).build();
+// Using the "living URL" standard is more flexible and behaves similarly to browsers
+UriComponents uriComponents = UriComponentsBuilder.fromUriString(uri, ParserType.WHAT_WG).build();
+###UrlHandlerFilter for trailing slash match
+Spring Framework recently deprecated the trailing slash match option in PathMatchConfigurer, the Spring community requested a way to gracefully handle this transition period in large applications. The new UrlHandlerFilter Servlet and reactive filters will help redirecting or rewriting incoming URLs with a trailing slash "/blog/blog-title/" to "/blog/blog-title".
+
+Check out the reference documentation for this.
+
+###Easier reflection hint registration for Native apps
+We have significantly improved the developer experience of registering reflection hints. @RegisterReflection has been introduced to easily register hints against arbitrary data types, and @ReflectionScan lets you opt-in for scanning of any reflection hints on arbitrary classes, not only Spring beans. See the reference documentation section for this.
+
+###Other
+Apart from the changes listed above, there have also been a lot of minor tweaks, improvements, and bug fixes including:
+
+This release includes a revision of the autowiring algorithm – for example, for consistent generic type matching and for faster resolution of name-based matches. See #28122 and #17677.
+TaskDecorator support for scheduled tasks; TaskDecorator is used for scheduled tasks as well, harmonizing task execution and scheduling in the process. See #23755.
+The Task and ScheduledTask types now expose metadata about their execution: last execution time and outcome, next scheduled execution time, etc.
+@DurationFormat and @Scheduled now support "simple" duration formats such as "30s" or "2h30m".
+Improved Spring Expression Language (SpEL) compilation support for constructor and method invocations that use varargs as well as for expressions that index into arrays and lists with an Integer. In addition, methods in SpEL expressions are now invoked via a public interface or public superclass whenever possible.
+Interception mechanism for RFC 7807 error detail responses #31970
+ResponseBodyEmitter now allows the registration of multiple state listeners, which is useful if your application maintains an ad hoc "keep alive" mechanism for your streaming sessions.
+ServerResponse now provides more ways to send data streams for WebMvc functional endpoints. Although Server Sent Events were already supported, this enables support for other streaming protocols.
+The new CHIPS feature deployed by browser vendors requires changes in applications using third-party cookies. Reactive web servers (except Undertow) now support Partitioned cookies.
+You can now test WebMvc.fn endpoints with MockMvcWebTestClient, just as you could already for your annotated controllers. See #30477.
+
+
