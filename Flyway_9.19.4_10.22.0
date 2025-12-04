@@ -1,0 +1,479 @@
+Flyway 10.22.0 (2024-11-20)
+Breaking changes
+(Preview) the preview verb 'diffApply' has been replaced with the verb 'model'
+Bug fixes
+Fix error message when using unpopulated default placeholders with configured seperators
+Fixed an issue where the 'Placeholders' configuration erased the 'jdbcProperties' configuration
+Resolved issue where Flyway would fail to publish an event to Flyway Pipelines using a PAT token in conjunction with using an offline permit for licensing
+Changes
+collations will now be dropped on postgres
+MySQL schema history table will create using default storage engine instead of being forced to `InnoDB`
+addTimestamp boolean option for generate and add verbs has been replaced with timestamp=always|auto|never option
+New features
+**Scoped Namespaces**: when configuring on the command line, you can skip namespaces if they match the verb of which you are in the scope of. For example, rather than `flyway init -init.projectName=test` you can now shortcut to `flyway init -projectName=test`.
+Thanks to Mihitoko and kantselovich for reporting these issues.
+
+Flyway 10.21.0 (2024-11-07)
+Breaking changes
+Removed`check.url`, `check.password` and `check.username`. These undocumented historic fields have been deprecated for a while and have confusing impacts (such as not working in all check functionality). It is recommended to use environments to replace this functionality, alternatively, check does support standard `url`, `username` and `password`
+Bug fixes
+Fixed an issue that the Repair command was unable to remove failed Repeatable migration entries in schema history table for MongoDB
+Changes
+Backup provisioner now puts database into single user mode before restoring
+Legacy Flyway keys (FL0...) are now deprecated
+Java compatibility
+Update H2 2.3.224 to 2.3.232
+Upgrade snowflake-jdbc 3.14.3 to 3.20.0 to fix CVE-2024-43382
+Performance improvements
+Improved `repair` performance when removing failed migrations
+Flyway 10.20.1 (2024-10-24)
+Bug fixes
+Remove erroneous Guava import
+Fixed an issue where Flyway incorrectly displayed a warning about missing locations, even when locations were properly configured per environment
+New features
+Enable out of process change detection for all license tiers when publishing results to Flyway Service
+Drift results are now sent to Flyway Service when the service is enabled
+Thanks to gsmet and tdg5 for reporting these issues.
+
+Flyway 10.20.0 (2024-10-16)
+Bug fixes
+Fix a bug where error messages are produced when `check -drift` is run without setting `deployedSnapshot`
+FLYWAY_PIPELINE_ID environment variable was previously broken but is now fixed
+Changes
+The 'createSchema' callback is now deprecated and replaced by 'beforeCreateSchema'
+Database compatibility
+Support PostgreSQL 17
+Java compatibility
+jetty-server 9.4.53.v20231009 to 9.4.56.v20240826 to fix CVE-2024-8184
+Thanks to cowwoc for reporting these issues.
+
+Flyway 10.19.0 (2024-10-03)
+Breaking changes
+Extracted FlywayMigrateException to its own class
+Database compatibility
+Add support for DB2 ZOS
+DB2 and Redshift now support AWS Secrets Manager
+New features
+The following flyway commands are now available in preview: add, diff, diffApply, diffText and generate.
+Java compatibility
+Upgrade google-cloud-spanner-jdbc 2.18.1 to 2.22.1 to fix CVE-2024-7254
+Upgrade google-cloud-secretmanager 2.20.0 to 2.51.0 to fix CVE-2024-7254
+Upgrade google-cloud-storage version 2.22.5 to 2.43.1 to fix CVE-2024-7254
+Flyway 10.18.2 (2024-09-26)
+Bug fixes
+Resolved cascading failure when reporting results to Flyway Pipelines
+Fix issue with `createStatement` override not being used in DB2 Z/OS
+Flyway 10.18.1 (2024-09-24)
+Bug fixes
+Fixed the issue that 'Check' command should throw an Exception if current environment and build environment are the same
+Issue 3812 Fixed the bug that Flyway failed to load Callbacks which are configured as a 'classpath'
+Issue 3812 Fixed the bug that Flyway failed to load Callbacks from default path 'db/callback'
+Java compatibility
+Update Parser createStatement method signature
+Retire usage of https://nexus.flywaydb.org
+Thanks to liununu for reporting these issues.
+
+Flyway 10.18.0 (2024-09-12)
+Bug fixes
+Issue 3915 Fixed an issue that could cause Flyway to hang when a database connection is unavailable and there are a large number of pending migrations
+Changes
+cleanOnValidationError is now deprecated
+Database compatibility
+Updated snowflake driver to 3.14.3
+New features
+Flyway now supports setting personal access token (PAT) through API
+Added a warning message if 'group' parameter is enabled for databases which don't support DDL transactions
+Thanks to Quairix for reporting these issues.
+
+Flyway 10.17.3 (2024-09-02)
+Bug fixes
+Add NOLOCK to SQL Server query to reduce blocking
+Fix result publishing when chaining commands
+Issue 3947 skipExecutingMigrations now works for OSS
+Thanks to catostrophe for reporting these issues.
+
+Flyway 10.17.2 (2024-08-22)
+Bug fixes
+Fixed the issue that Flyway errors when running 'check -code' with 'classpath' locations
+Fixed the issue where the classpath could not be resolved when running the 'check' command
+Flyway 10.17.1 (2024-08-13)
+Bug fixes
+Fixed the issue that Repeatables apply placeholders when calculating checksum even when 'placeholderReplacement' is set to false in script config file
+Fixed the issue where setting `placeholderReplacement` to `true` in the script configuration had no effect when it was `false` in the global configuration.
+Issue 3934 Fix `org.flywaydb:flyway-database-cassandra` artifact on Maven Central
+Changes
+Script migration is now available as an open source feature of Flyway
+New features
+Support Environment Overrides for the 'jarDirs' parameter
+Add suggestions for incorrect configurations within the Flyway namespace
+Java compatibility
+Move report function and assets to their own module
+Thanks to janhicken for reporting these issues.
+
+Flyway 10.17.0 (2024-07-29)
+Bug fixes
+Fixed the bug that prevented powershell scripts from running when located in a folder with spaces in the folder name.
+Fixed the issue where schemas might get inadvertently cleaned when running check in MySQL
+Database compatibility
+Cassandra taken out of preview and added to OSS edition
+New features
+Azure Identity is now a dependency of Flyway for SQL Server Active Directory MSI authentication
+Flyway now supports Environment Overrides for parameters configuration
+Flyway 10.16.0 (2024-07-18)
+Bug fixes
+Fix a bug where mongoDb database name was null
+Removed duplicate libraries from the command line
+Issue with `${flyway:workingDirectory}` not using configured working directory has been fixed
+Fixed an issue where failed migrations could report a negative execution time
+Changes
+The schema model's location is now also specified in schemaModelLocation in the Flyway namespace in Flyway.toml
+Flyway 10.15.2 (2024-07-01)
+Java compatibility
+Bump SQLServer JDBC to 12.6.3 to fix breaking change with MSAL4j 1.15.1
+Flyway 10.15.1 (2024-06-27)
+Bug fixes
+Fixed the bug preventing users from configuring schemas or jarDirs via command-line
+Changes
+Allow flyway internals to return query results when migration executor runs a query
+Removed the maximum of 100 migrations in Amazon S3 limitation from Open Source Edition
+Java compatibility
+Bump msal4j to 1.15.1 to fix CVE-2024-35255
+Flyway 10.15.0 (2024-06-11)
+Bug fixes
+Fixed bug where certain keywords in BigQuery and HSQL were not handled correctly when in lower case.
+Fix a bug where `targetSchemaVersion` is not set in API and JSON result objects when `migrate` fails, or no versioned migrations are applied
+Fix the bug preventing users from initiating a trial using the "auth" command
+Database compatibility
+Issue 3900 Increase Cloud Spanner support to 2.18.1
+Issue 3905 Increase H2 support to 2.2.224
+Java compatibility
+add file helpers
+Thanks to credmond-git and BlueIce for reporting these issues.
+
+Flyway 10.14.0 (2024-06-03)
+Bug fixes
+Flyway no longer makes repeated calls to the same Vault secret. This allows using dynamic roles from the Vault database engine.
+Changes
+Flyway will not auto-install SQLFluff 1.2.1 for Enterprise customers when running code analysis
+The 'Rules Location' parameter of Flyway Check command will now honor 'workingDirectory' configuration
+Flyway 10.13.0 (2024-05-14)
+Bug fixes
+Flyway should only send qualified migration files to code analysis when no url is configured rather than all the '.sql' files
+Changes
+Improve the code analysis major/minor rule violation error output
+the default Code Analysis Rule RX001 won't require the 'drop table' statement to appear at the start of a SQL statement
+Updated wording on Drift Report
+Flyway won't print out the whole sql statement responsible for a migration failure unless debug mode enabled
+If Cherry Pick is configured in OSS or Community Edition, Flyway will give 'upgrade required' prompt
+Database compatibility
+Added support for Databricks in Flyway - thanks to the community for the contribution
+New features
+add `outputProgress` support to legacy (conf) projects
+Java compatibility
+Use Temurin 17.0.11+9 JRE for Flyway Command Line
+Flyway 10.12.0 (2024-04-29)
+Bug fixes
+Flyway shouldn't call SqlFluff if there are no pending migrations found
+Changes
+Reworded exception messages when executing scripts fails to say "Script ... failed" instead of "Migration ... failed"
+'beforeEachMigrateStatement' and 'afterEachMigrateStatement' callbacks are now open source features
+Updated wording on Drift Report
+New features
+Personal Access Tokens are now supported as a method of authorizing Flyway
+'versioned' and 'repeatable' can now be used for 'ignoreMigrationPatterns' in the open-source version.
+Flyway 10.11.1 (2024-04-18)
+Bug fixes
+Issue 3866 set System Properties as String rather than Boolean
+Changes
+Update license header plugin
+When running the SQL*Plus '@' command, Flyway will honour 'workingDirectory' configuration when looking for runnable scripts
+Thanks to BusyByte for reporting these issues.
+
+Flyway 10.11.0 (2024-04-03)
+Breaking changes
+Update ErrorCode and ErrorOutput to allow extending in plugins - The `ErrorCode` enum is now an interface with the base enum now residing in `CoreErrorCode`. Any Java usage of this enum will need to be updated accordingly.
+Bug fixes
+Add support for stream configuration for ClassPath SQL Migrations
+Changes
+Continue to improve the way Flyway honors the workingDirectory parameter
+Remove unrelated warning from polyglot engine.
+Broken up the check page into functional sections and reference & explanation material
+shouldExecuteExpression returned from info output in json format contained expression after placeholder replacement, rather than before placeholder replacement.
+New features
+Added an `init` command which will create a project compatible with Flyway Desktop
+Create `flyway.communityDBSupportEnabled` to turn off community db support database types if desired
+Java compatibility
+Update AWS S3 dependency to fix CVE-2024-29025
+Issue 3860 Remove need for `java.desktop`
+Thanks to axelfontaine for reporting these issues.
+
+Flyway 10.10.0 (2024-03-14)
+Changes
+Improve the way Flyway honors the `workingDirectory` parameter
+Flyway OSS won't throw any exception for unknown parameters if the TOML contains non-flyway namespaces.
+Flyway 10.9.1 (2024-03-07)
+Bug fixes
+Fix issue with MySQL not falling back to MariaDB driver when official driver is unavailable
+Fix duplicate migration pattern error when running 'check -drift' or 'check -changes' on a database with multiple schema creation rows.
+Flyway 10.9.0 (2024-03-05)
+Bug fixes
+Fixing issue where placeholders are not merged properly when using TOML configuration files.
+Changes
+Update Flyway-Community-DB-Support version to 10.8.0
+Database compatibility
+Reintroduce OceanBase
+Cassandra support added as a preview feature in Redgate edition.
+Java compatibility
+Update Mongo JDBC driver to 1.19
+Update postgres to 42.7.2 for CVE-2024-1597
+Increase dependency software.amazon.awssdk:s3 to 2.21.46 to fix CVE-2023-44487
+Flyway 10.8.1 (2024-02-15)
+Bug fixes
+Issue 3841 Fix issue with PostgreSQL when running in a transaction
+Database compatibility
+Removed Oceanbase from Flyway CLI. If required, please download from Maven Central.
+Flyway 10.8.0 (2024-02-15)
+Changes
+output from flyway info can return the contents of a shouldExecute condition, if provided
+Issue 3835 Downgrade MariaDB Connect/J from 3.3.2 to 2.7.11 to continue to support latest MariaDB without compatibility issues with MySQL. MariaDB 3.X Connect/J requires for `permitMysqlScheme` flag in the URL
+New features
+Provide Regex rules to replace the SQLFluff rules Flyway_L001 and Flyway_L002
+Java compatibility
+Upgrade com.nimbusds:nimbus-jose-jwt@9.37.2 to fix CVE-2023-52428
+Thanks to bhavneshpateloptum for reporting these issues.
+
+Flyway 10.7.2 (2024-02-08)
+Bug fixes
+Flyway errors running `check -dryrun` for MongoDB
+Fixed a bug with the Oracle PL/SQL parser which caused certain view definitions containing the 'FORCE' keyword to break.
+Issue 3837 Parameter settings through Environment variables got ignored if combined with command line parameter settings
+Changes
+Bump Flyway-Community-DB-Support to 10.7.2
+Update AWS secrets manager JDBC dependency to 2.0.2.
+Flyway matches Oracle SQL*Plus behavior when parsing 'SHOW ERR[ORS]'.
+Database compatibility
+Add Community DB Support for Oceanbase
+Thanks to jerdaane for reporting these issues.
+
+Flyway 10.7.1 (2024-01-30)
+Breaking changes
+The Flyway Commandline package no longer includes dependencies for Apache Derby. This is due to CVE-2022-46337. Apache have not released Java-17 compatible jars with the vulnerability fixed, so users will have to acquire their own Derby dependencies. See Flyway Derby database support for details
+Due to a change in the latest version of the MariaDB driver, MySQL users will either have to set 'permitMysqlScheme=true' in their connection string or download the MySQL driver. See here for more details.
+Bug fixes
+Fix to filter on Cloud Spanner table schema name when selecting all foreign key constraints. This is to make sure that no system constraints are included in the results if they were to be added in the future. Additionally if Cloud Spanner starts supporting named user schemas, the listed foreign keys are consistent with the tables that are used, which are all filtered based on an empty schema name.
+Fixed issues caused by dollar signs and backslashes in property resolver values.
+Fix configuring JDBC Properties in command line environment configuration
+Changes
+Improved formatting of Dry Run report.
+The configFiles parameter respects interpreting your configuration in the appropriate format
+Make Flyway "Output Query Results" an open source feature
+Database compatibility
+Added support for Clickhouse in Flyway - thanks to the community for the contribution
+To help increase Flyway's community contribution support, flyway-community-db-support/ has been moved to separate repository: flyway/flyway-community-db-support. Any new PRs for database support additions need to be raised there and any existing PRs in flyway/flyway will need to be transferred by the author.
+Issue 3821 Flyway now supports Snowflake up to version 8.3.
+Issue 3822 Increase MariaDB JDBC driver to version 3.3.2 and add support for MariaDB 11.2
+New features
+If Working Directory is set, Flyway will now use that location to check for default Flyway configuration files in addition to its previous functionality. See updated documentation for more information on default command line configuration order.
+allow onEachMigrateOrUndoStatementEvent callback to block statement execution
+Thanks to EugenMayer and frichtarik for reporting these issues.
+
+Flyway 10.6.0 (2024-01-16)
+Bug fixes
+Resolve RedgateCompare toml being read incorrectly.
+Changes
+Improved auth logging to be more concise
+Make Flyway "Target" an open source feature
+Make Flyway Detect Encoding an open source feature
+Make Flyway Batch an open source feature
+Make Flyway Stream an open source feature
+Java compatibility
+Adding API friendly method to `getEngines`
+Flyway 10.5.0 (2024-01-11)
+New features
+adding support to configure environments via command line
+Flyway 10.4.1 (2023-12-22)
+New features
+Allow build environments to be processed by resolvers
+Flyway 10.4.0 (2023-12-20)
+Bug fixes
+Use instance variable of defaultProperties in DriverDataSource constructor instead of parameter variable
+Database compatibility
+Add additional connection attributes when connecting to SingleStore
+Thanks to AdalbertMemSQL for reporting these issues.
+
+Flyway 10.3.0 (2023-12-14)
+Breaking changes
+The clean command will also drop services and queues in SQL Server.
+Bug fixes
+Correct redgate-compare options when using TOML with check and drift or changes.
+Fixed reports not displaying Teams and Enterprise level features
+Database compatibility
+Issue 3806 Correct HSQLDB support message and increase driver support to 2.7.2
+Thanks to ashtonbatty for reporting these issues.
+
+Flyway 10.2.0 (2023-12-08)
+Bug fixes
+Fix parsing of boolean comparison options
+Fixed a bug where comma-separated lists for configuration parameters passed in via command line would fail with a parsing error
+Changes
+Update document on setting environment parameter through environment variable
+Upgrade version of Maven dependencies used by the Flyway Maven plugin to 3.9.6.
+Make datasource in classic config environment aware
+Improve error message for misconfigured environment variables in TOML config.
+Issue 3797 Use latest version of Apache Derby dependencies to avoid CVE-2022-46337.
+Database compatibility
+Added support for cleaning table snapshots and table clones in Google BigQuery.
+New features
+Can now start a trial with the `auth` command
+add `supported-databases` command.
+Java compatibility
+Move `flyway-sqlserver` into `flyway-database` folder space
+Thanks to fage88 for reporting these issues.
+
+Flyway 10.1.0 (2023-11-22)
+Bug fixes
+Correct urls for fetching offline permits
+Fix dropping views from GCP Spanner when running clean.
+Add new groupId to flyway-gradle-plugin
+Issue 3793 Fix index out of bounds issue in `ConfigUtils`
+Database compatibility
+Flyway now supports PostgreSQL version 16.
+MongoDB 7.0 support available. Currently shipped as preview in Redgate edition CLI.
+Breaking changes
+Updated to use dotnet 8 which drops support for RHEL 7 - this only impacts the check verb (drift and changes)
+New features
+Flyway now uses Schema History Table locking to allow parallel migrations in Google Cloud Spanner.
+Thanks to AlejandroYuste for reporting these issues.
+
+Flyway 10.0.1 (2023-11-13)
+Bug fixes
+Fixed handling of `FLYWAY_JDBC_PROPERTIES_ACCESSTOKEN` environment variable with toml projects
+Fixed bug caused by generation of unrecognized parameters when starting the Redgate Comparison engine process.
+Fixed making locations relative to the working directory when using TOML configuration.
+When using the new TOML configuration format, 'jarDirs' and 'schemas' will no longer be erased when also configuring certain parameters through the command line or environment variables.
+New features
+add support for progress logging to STDERR with json output
+Notes
+Flyway Gradle Plugin is currently unable to be released.
+Flyway 10.0.0 (2023-10-31)
+Flyway V10 has landed
+
+Breaking changes
+Removed deprecated flyway.check.reportFilename. Please use flyway.reportFilename.
+The 'cherryPick' configuration option has been moved to a configuration extension. When using the API, it can no longer be directly set through configuration object - instead it is set using an 'cherryPickConfigurationExtension' object which must be retrieved from the plugin register. See the docs for this configuration parameter for more information.
+License key logic has been moved into a different module ('flyway-key-licensing'). This is not shipped in the open-source edition of Flyway so attempting to configure the license key will cause an error. In the Redgate edition of Flyway, license keys must be configured as a configuration extension (see configuration docs for more information).
+Rename lib/community with lib/flyway
+Removal of the default `sql` folder from Flyway CLI and Docker release
+Modularized database support in Flyway to allow greater flexibility. This includes; DB2, Derby, HSQLDB, Informix, PostgreSQL, CockroachDB, Redshift, SAP HANA, Snowflake and Sybase ASE. See Database Support page for your database for module dependency. If you are including Flyway in your project, either as a dependency or via the maven and gradle plugins please include the respective database module in your project configuration.
+Changes
+Remove unused Edition flags documentation, E.G -community or -teams. These flags are no longer used by Flyway and have been marked for deprecation.
+The lowest supported Gradle version for the Flyway Gradle plugin is now 7.6. This is due to a known issue with older Gradle versions where it cannot handle dependencies with multi-release chars containing Java 19 code.
+Move older db support handling into OSS
+If flyway fails due to a licensing issue, return a unique (35) exit code
+Adjusted the wording on the 'deleted' Repair action to mention it only marks migrations as deleted
+Database compatibility
+Flyway now supports MySQL 8.1.0.
+Include singlestore into Flyway Community Edition.
+Google Cloud Spanner has been released and is no longer BETA
+New features
+Info filters are now available in community
+Added auth command to authorize Flyway online using Redgate username and password
+Added support for REDGATE_LICENSING_PERMIT_PATH and REDGATE_LICENSING_PERMIT environment variables along with offline licensing for offline machines
+beforeEachMigrateStatement, afterEachMigrateStatement, afterEachMigrateStatementError, and beforeConnect callbacks are now Community features
+add support for LocalSecrets resolvers
+Script migrations are now a Community feature
+Java compatibility
+Retired Java 8 from use. Java 17 is now required for development
+Move packages and groupID from `org.flywaydb.enterprise` to `com.redgate.flyway`. Duplicate packages will be deployed to `org.flywaydb.enterprise` until a future release.
+Notes
+Flyway Gradle Plugin is currently unable to be released.
+Flyway 9.22.3 (2023-10-12)
+Changes
+The AWS-Secrets JDBC driver included in the Commandline package has been upgraded to 2.0.0.
+Issue 3752 add "END CASE" support in BigQuery sql script
+Database compatibility
+Update newest supported version of Snowflake to 7.33
+Java compatibility
+Keep software.amazon.awssdk:s3 on latest 2.20.X release to get fix for CVE-2023-4586
+Upgrade software.amazon.awssdk:s3@2.20.94 to software.amazon.awssdk:s3@2.20.158 to fix CWE-295
+Thanks to kankaiz for reporting these issues.
+
+Flyway 9.22.2 (2023-09-21)
+Bug fixes
+Fixed configuration disclosure in extended debug output. CVE-2023-43564
+improve parsing of 'ACCESSIBLE BY' clauses in Oracle
+Fix parsing issue caused by statements containing multiple sets of parentheses.
+Issue 3730 Make SLF4J detection also work with SLF4J 2.0
+Changes
+Enhance Comparison engine error output
+Database compatibility
+Flyway now supports MariaDB version 10.11
+Java compatibility
+update mariadb-java-client to 2.7.10 to resolve CONJ-1091
+Thanks to hho for reporting these issues.
+
+Flyway 9.22.1 (2023-09-12)
+Bug fixes
+Correctly parse Oracle wrapped statements.
+Fix filter file option detection
+Fix invalid flags not correctly erroring at the end of the arguments
+Changes
+update Java 17 JRE included in Flyway CLI
+Database compatibility
+Issue 3736 Increase CockroachDB support to V22.2
+Thanks to trourance for reporting these issues.
+
+Flyway 9.22.0 (2023-08-30)
+Bug fixes
+Fix issue with `check.reportFilename` parameter
+Changes
+Code Analysis will honor `BaselineVersion` configuration if SchemaHistory table is absent.
+Flyway 9.21.2 (2023-08-22)
+Changes
+check.buildUrl, check.buildUser and check.buildPassword are now deprecated. These will be replaced by check.buildEnvironment in Flyway 10.0
+Database compatibility
+Flyway now supports Oracle 21.
+Issue 3726 Add MariaDB to Flyway H2 compatibility mode
+New features
+allow external browser SSO in Snowflake
+Java compatibility
+Issue 3723 Upgrade Jackson to 2.15.2
+Thanks to oujesky and iamniche-too for reporting these issues.
+
+Flyway 9.21.1 (2023-07-27)
+Changes
+Added working directory variable to config
+New features
+When running the SQL*Plus '@' command, Flyway will also search 'SQLPATH' and 'ORACLE_PATH' for runnable scripts. It will also attempt to load from absolute paths.
+Java compatibility
+Upgrade H2 to 2.2.220
+Flyway 9.21.0 (2023-07-20)
+Bug fixes
+fix handling of plugin string array properties
+Previously, when migrating using Flyway's SQL*Plus feature, Flyway parsed the first statement of the migration script before reading 'login.sql'/'glogin.sql' files. These files are now fully read beforehand.
+Changes
+Drop B Script functionality from teams into OSS
+Flyway 9.20.1 (2023-07-12)
+Changes
+Update Maven Version check to use Maven Metadata to avoid website deprecation issues
+New features
+Added table feedback for SQL Plus
+Java compatibility
+Upgrade AWS SDK to fix SNYK issue CVE-2023-34462
+Upgrade google-cloud-spanner to fix SNYK issue SNYK-JAVA-COMGOOGLEGUAVA-5710356
+Upgrade Google Cloud Secretmanager to 2.22.5 to fix SNYK-JAVA-COMGOOGLEGUAVA-5710356
+Upgrade Google Cloud Storage to 2.22.5 to fix SNYK-JAVA-COMGOOGLEGUAVA-5710356
+Update AWS Java SDK to 2.20.69 to fix SNYK-JAVA-IONETTY-5725787
+Issue 3690 flyway-core now has a dependency on jackson-dataformat-toml.
+Thanks to froque for reporting these issues.
+
+Flyway 9.20.0 (2023-06-20)
+Changes
+RGCompare MySql support has gone GA
+Database compatibility
+Flyway now supports the latest version on SQL Server 2022.
+Flyway 9.19.4 (2023-06-09)
+Bug fixes
+incorrect license shown above correct license
+Issue 3682 Fixed parsing of boolean values in configuration
+Thanks to TheHenrick for reporting these issues.
