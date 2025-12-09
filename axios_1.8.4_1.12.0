@@ -1,0 +1,53 @@
+Release v1.8.4
+Release notes:
+Bug Fixes
+buildFullPath: handle allowAbsoluteUrls: false without baseURL (#6833) (f10c2e0)
+
+
+Release v1.9.0
+Release notes:
+Bug Fixes
+core: fix the Axios constructor implementation to treat the config argument as optional; (#6881) (6c5d4cd)
+fetch: fixed ERR_NETWORK mapping for Safari browsers; (#6767) (dfe8411)
+headers: allow iterable objects to be a data source for the set method; (#6873) (1b1f9cc)
+headers: fix getSetCookie by using 'get' method for caseless access; (#6874) (d4f7df4)
+headers: fixed support for setting multiple header values from an iterated source; (#6885) (f7a3b5e)
+http: send minimal end multipart boundary (#6661) (987d2e2)
+types: fix autocomplete for adapter config (#6855) (e61a893)
+Features
+AxiosHeaders: add getSetCookie method to retrieve set-cookie headers values (#5707) (80ea756)
+
+
+Release v1.10.0
+Release notes:
+Bug Fixes
+adapter: pass fetchOptions to fetch function (#6883) (0f50af8)
+form-data: convert boolean values to strings in FormData serialization (#6917) (5064b10)
+package: add module entry point for React Native; (#6933) (3d343b8)
+Features
+types: improved fetchOptions interface (#6867) (63f1fce)
+
+
+Release v1.11.0
+Release notes:
+Bug Fixes
+form-data npm pakcage (#6970) (e72c193)
+prevent RangeError when using large Buffers (#6961) (a2214ca)
+types: resolve type discrepancies between ESM and CJS TypeScript declaration files (#6956) (8517aa1)
+
+
+Release v1.12.0
+Bug Fixes
+adding build artifacts (9ec86de)
+dont add dist on release (a2edc36)
+fetch-adapter: set correct Content-Type for Node FormData (#6998) (a9f47af)
+node: enforce maxContentLength for data: URLs (#7011) (945435f)
+package exports (#5627) (aa78ac2)
+params: removing '[' and ']' from URL encode exclude characters (#3316) (#5715) (6d84189)
+release pr run (fd7f404)
+types: change the type guard on isCancel (#5595) (0dbb7fd)
+Features
+adapter: surface low‑level network error details; attach original error via cause (#6982) (78b290c)
+fetch: add fetch, Request, Response env config variables for the adapter; (#7003) (c959ff2)
+support reviver on JSON.parse (#5926) (2a97634), closes #5924
+types: extend AxiosResponse interface to include custom headers type (#6782) (7960d34)
